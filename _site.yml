@@ -1,7 +1,7 @@
 name: "predicting-building-inspections"
 output_dir: "."
 navbar:
-  title: "Nicks Website"
+  title: "Predicting Building Inspections"
   left:
     - text: "Home"
       href: index.html
