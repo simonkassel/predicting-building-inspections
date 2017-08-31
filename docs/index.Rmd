@@ -3,3 +3,5 @@ title: "Predicting Building Inspections"
 ---
 
 This is a project of the Data Analytics team at Azavea.
+
+[results](results.html)
