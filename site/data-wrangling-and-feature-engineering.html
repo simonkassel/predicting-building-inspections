@@ -209,8 +209,227 @@ $(document).ready(function () {
 
 
 <p>Insert text about this section</p>
-<pre class="r"><code>print(&quot;Hello0000000000 World&quot;)</code></pre>
-<pre><code>## [1] &quot;Hello0000000000 World&quot;</code></pre>
+<pre class="r"><code>###########################################################################
+## PROJECT: L+I predictive modeling
+##
+## SCRIPT PURPOSE: Feature engineering
+##    - combine violation and inspection datasets
+##    - measure before and after outcomes for each inspections
+##    - engineer features from license and inspection dataset
+##    - create new variables from additional city datasets
+##    - remove unnecessary fields
+##    - export final dataset for model building
+##
+## DATE: 18 July 2017
+## AUTHOR: Simon Kassel
+###########################################################################
+
+# helper functions 
+source(&quot;R/helper-functions.R&quot;)
+
+# packages
+packages(
+  c(&quot;tidyverse&quot;,
+    &quot;data.table&quot;,
+    &quot;sp&quot;,
+    &quot;rgdal&quot;,
+    &quot;lubridate&quot;,
+    &quot;plyr&quot;,
+    &quot;forcats&quot;,
+    &quot;caret&quot;,
+    &quot;spatstat&quot;,
+    &quot;RCurl&quot;,
+    &quot;jsonlite&quot;
+    )
+  )
+
+
+# LOAD AND WRANGLE DATA ---------------------------------------------------
+
+# load spatial datasets
+load(&quot;data/lni_data.Rdata&quot;)
+
+# get coordinates as attributes
+insp &lt;- getCoords(insp)
+viol &lt;- getCoords(viol)
+
+# join violations and inspections dataset
+full_dat &lt;- joinSPdfs(viol, insp, &quot;casenumber&quot;)
+
+# clean full data frame:
+#   rename fields, creteUID, add a violation year field   
+full_dat &lt;- cleanData(full_dat)
+
+# filter the data frame
+#   remove some NA fields, closed inspections
+filtered_dat &lt;- filterData(full_dat)
+
+# associate each inspection with other inspections in its case
+#   measure outcomes of the same case before and after the inspection 
+#     in question
+filtered_dat &lt;- measureAllFails(filtered_dat)
+
+# REMOVE
+# to obtain this dataset dataset:
+load(&quot;output/data/lni_15to17_withRecent_2017-07-18.Rdata&quot;)
+
+# remove the initial inspection instances
+df &lt;- filtered_dat %&gt;%
+  filter(rec.inspStatus != &quot;none&quot;) %&gt;%
+  filter(as.Date(violDte) &lt; as.Date(inspCompl)) %&gt;%
+  data.table() %&gt;%
+  .[, c(&quot;organizati&quot;, &quot;unit&quot;, &quot;apdesc&quot;, &quot;aptype&quot;) := NULL] %&gt;%
+  na.omit()
+
+
+# FEATURE ENGINEERING -----------------------------------------------------
+
+# create additional variables
+df$zipShort &lt;- substr(df$zip, 1, 5) %&gt;% as.factor()
+df$failed &lt;- ifelse(df$inspStatus == &quot;Failed&quot;, 1, 0)
+df$before &lt;- as.factor(df$before)
+
+# add 3 variables indicating durations from previous events in lifecycle of
+#   building case
+df &lt;- durationVars(df)
+
+# extract &#39;violation type&#39; variable and remove levels ocurring &lt; 0.02% 
+#   of the time
+df_violTpe  &lt;- df %&gt;%
+  select(apinspkey, violDesc) %&gt;%
+  mutate(violTpe = fct_lump(violDesc, p = 0.02)) %&gt;%
+  dplyr::rename(id.apinspkey = apinspkey)
+
+# generate a lookup table to get the names of violation types (for later 
+#   use)
+violType_lookup &lt;- getFactorLevelLookup(df_violTpe$violTpe, &quot;violTpe&quot;)
+
+# encode violation-type categorical feature as a series of binary
+#   numeric dummy variables
+df_violTpe &lt;- castAndSumm(df_violTpe, &quot;id.apinspkey&quot;, &quot;violTpe&quot;, binary = FALSE)
+
+
+# SUMMARISE TO THE INSPECTION LEVEL ---------------------------------------
+
+# collapse dataset to the inspection level, summarising 
+ds &lt;- summariseInspections(df)
+
+# measure for spatial autocorrelation among repeat violators
+ds &lt;- endogMain(ds, nlist = c(5, 10))
+
+# remove infrequently occuring categorical variables
+ds$f.inspDesc &lt;- fct_lump(ds$f.inspDesc, prop = 0.02)
+ds$f.recStatus &lt;- fct_lump(ds$f.recStatus, prop = 0.02)
+
+# miscellenous feature engineering
+ds &lt;- ds %&gt;%
+  mutate(f.numFailTypes = as.factor(squishToRange(e.numFailTypes))) %&gt;%
+  mutate(f.numViol = as.factor(squishToRange(e.numViol))) %&gt;%
+  mutate(f.prevFail = as.factor(squishToRange(e.prevFail))) %&gt;%
+  select(-e.numFailTypes, -e.numViol, -e.prevFail) %&gt;%
+  filter(is.finite(e.avgDists.repOfAll.n5))
+
+
+# EXTERNAL DATA SOURCES ---------------------------------------------------
+
+# vacant property indicators
+# read dataset
+vpi &lt;- read.csv(&quot;http://data.phl.opendata.arcgis.com/datasets/f7ed68293c5\
+                e40d58f1de9c8435c3e84_0.csv&quot;, stringsAsFactors = TRUE)
+
+# look for address matches
+ds$f.vpi.isBldgAddkey &lt;- ifelse(
+  ds$l.addresskey %in% vpi$LNIADDRESSKEY, 1, 0
+  ) %&gt;% as.factor()
+
+# look for owner name matches
+ds$f.vpi.isOwner &lt;- ifelse(
+  ds$l.owner %in% vpi$OWNER1, 1, ifelse(ds$l.owner %in% vpi$OWNER2, 1, 0)
+  ) %&gt;%
+  as.factor()
+
+
+# tax delinquency dataset
+# encode and format api call
+url &lt;- URLencode(&quot;https://data.phila.gov/carto/api/v2/sql?q=SELECT owner,\
+                 total FROM real_estate_tax_balances WHERE total &gt; 0 AND \
+                 tax_period &gt; 2015 AND owner != &#39;&#39;&quot;)
+url &lt;- gsub(&quot;22&quot;, &quot;27&quot;, url)
+
+# get tax delinquency data
+delinquent &lt;- getURL(url)
+
+# parse delinquency data from JSON
+del &lt;- fromJSON(delinquent)$rows %&gt;%
+  group_by(owner) %&gt;%
+  dplyr::summarise(s.ownerTaxBalance = mean(total)) %&gt;%
+  dplyr::rename(l.owner = owner)
+
+# extract a dataset of tax balance data for each property
+ds.temp &lt;- ds %&gt;%
+  mutate(l.owner = as.character(l.owner)) %&gt;%
+  left_join(del) %&gt;%
+  select(s.ownerTaxBalance) %&gt;%
+  mutate(
+    s.ownerTaxBalance = ifelse(
+      is.na(s.ownerTaxBalance), 0, s.ownerTaxBalance)) %&gt;%
+  mutate(f.ownerDelinquent = as.factor(ifelse(s.ownerTaxBalance &gt; 5, 1, 0)))
+
+# and bind it to the master dataset
+ds &lt;- cbind(ds, ds.temp)
+
+
+
+# ONE-HOT ENCODE CATEGORICAL VARIABLES ------------------------------------
+
+# get list of factor variable names
+names &lt;- ds %&gt;%
+  select(starts_with(&quot;f.&quot;)) %&gt;%
+  names %&gt;%
+  as.list
+
+# encode each of these as  a series of binary dummy variables
+factor_variable_list &lt;- llply(names, castFactorVars, dat = ds, 
+                              .progress = &quot;text&quot;)
+
+# join all categorical data variable dfs together
+ds &lt;- plyr::join_all(factor_variable_list, by = &quot;id.apinspkey&quot;, type = &quot;left&quot;, match = &quot;all&quot;) %&gt;%
+  left_join(df_violTpe, &quot;id.apinspkey&quot;) %&gt;%
+  select(-id.apinspkey) %&gt;%
+  cbind(ds,. )
+
+# generate two different response variables, factor and numeric
+#   for different model types
+ds &lt;- ds %&gt;%
+  dplyr::rename(o.failed.n = o.failed) %&gt;%
+  mutate(o.failed.f = as.factor(o.failed.n)) %&gt;%
+  select(o.failed.n, o.failed.f, 2:ncol(.))
+
+# create a vector of variable names that will be used in the models
+# and one that won&#39;t
+mod_vars &lt;- ds %&gt;% select(
+  -o.numFails, -starts_with(&quot;i.&quot;),
+  -starts_with(&quot;l.&quot;), -starts_with(&quot;f.&quot;)) %&gt;%
+  names
+non_mod_vars &lt;- setdiff(names(ds), mod_vars)
+
+
+# FACTOR LOOK-UP TABLES ---------------------------------------------------
+
+# create a series of reference variable lookup tables for later use
+lookup &lt;- rbind(
+  violType_lookup,
+  getFactorLevelLookup(ds$f.inspDesc, &quot;inspDesc&quot;),
+  getFactorLevelLookup(ds$f.recStatus, &quot;recStatus&quot;),
+  getFactorLevelLookup(ds$f.priorityde, &quot;priorityde&quot;)
+)
+
+
+# SAVE --------------------------------------------------------------------
+
+# save objects for use in following scripts
+save(ds, mod_vars, non_mod_vars, lookup, file = &quot;data/full_dataset_for_modeling.Rdata&quot;)
+save(df, file = &quot;data/failure_level_dataset.Rdata&quot;)</code></pre>
 
 
 

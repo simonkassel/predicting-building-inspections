@@ -4,5 +4,5 @@
 #working on at the time. 
 setwd("C:/Users/skassel/Desktop/website/predicting-building-inspections/site/")
 
-#render your sweet site. 
+#render site. 
 rmarkdown::render_site()

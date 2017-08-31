@@ -208,7 +208,1079 @@ $(document).ready(function () {
 </div>
 
 
-<p>Helper functions</p>
+<pre class="r"><code>###########################################################################
+## PROJECT: L+I predictive modeling
+##
+## SCRIPT PURPOSE: Functions
+##    - Helper functions for all scripts within the project
+##
+## DATE: 18 July 2017
+## AUTHOR: Simon Kassel
+###########################################################################
+
+
+# all ---------------------------------------------------------------------
+
+packages &lt;- function(package_vector) {
+  # Check to see if packages are alreay installed, if so load them, if not
+  # install then load them.
+  #
+  # Args:
+  #   package_vector: a vector of quoted package names
+  #
+  # Returns:
+  #   NA
+  #
+  # Side effects:
+  #   Installs and loads packages
+  #
+  
+  for (lib in package_vector) {
+    if (!requireNamespace(lib, quietly = TRUE))
+      install.packages(lib)
+    suppressMessages(library(lib, character.only = TRUE))
+    remove(lib)
+  }
+}
+
+
+# data-wrangling-and-feature-engineering.R --------------------------------
+
+getCoords &lt;- function(spObject) {
+  # Add the coordinates of a spatial points dataframe as attributes in the
+  # table
+  #
+  # Args:
+  #   spObject: a spatial points dataframe to get the coordinates of
+  #
+  #
+  # Returns:
+  #   A new sp object with lat/lon fields with the names &#39;geocode_x&#39; and
+  #   &#39;geocode_y&#39;
+  #
+  
+  spObject$geocode_x &lt;- spObject@coords[,1]
+  spObject$geocode_y &lt;- spObject@coords[,2]
+  
+  return(spObject)
+}
+
+
+joinSPdfs &lt;- function(violations, inspections, field) {
+  # Joins together violations and inspection sp data frames into one full
+  # dataset
+  #
+  # Args:
+  #   violations: a spatial points dataframe of violations
+  #   inspections: a spatial points data frame of violations
+  #   field: a quoted field name to joine by
+  #
+  # Returns:
+  #   A data frame of all violations at all inspections
+  #
+  
+  vdat &lt;- violations@data
+  idat &lt;- inspections@data
+
+  joinColumns &lt;- names(vdat) %&gt;%
+    .[!. %in% names(idat)] %&gt;%
+    c(field)
+
+  full_dat &lt;- full_join(idat, vdat[, c(joinColumns)], by = field)
+
+  return(full_dat)
+}
+
+
+cleanData &lt;- function(dat) {
+  # Misc data cleaning
+  #
+  # Args:
+  #   dat: a data frame to clean and rename
+  #
+  # Returns:
+  #   a cleaned and renamed data frame
+  #
+  
+  dat %&gt;%
+    createUID() %&gt;%
+    renameFields() %&gt;%
+    addViolYear() %&gt;%
+    data.table() %&gt;%
+    return()
+}
+
+
+filterData &lt;- function(dat) {
+  # Remove NAs and filter data frams
+  #
+  # Args:
+  #   dat: a data frame of all inspections with NAs
+  #
+  # Returns:
+  #   filtered data frame with NAs removed
+  #
+  
+  dat %&gt;%
+    removeNAs() %&gt;%
+    filterByOutcome() %&gt;%
+    return()
+}
+
+
+filterByOutcome &lt;- function(dat) {
+  # Filter data frame for just passed and failed inspection outcomes
+  # and for just inspections after 2014
+  #
+  # Args:
+  #   dat: a data frame of all inspections (outcome and year)
+  #
+  # Returns:
+  #   filtered data frame
+  #
+  
+  dat %&gt;%
+    filter(violYear &gt; 2014) %&gt;%
+    filter(inspStatus %in% c(&#39;Passed&#39;, &#39;Failed&#39;)) %&gt;%
+    return()
+}
+
+
+createUID &lt;- function(dat) {
+  # Add a uid field to the dataset
+  #
+  # Args:
+  #   dat: a data frame with &#39;apinspkey&#39; and &#39;apfailkey&#39; fields
+  #
+  # Returns:
+  #   the same data frame with a uid field at the beginning
+  #
+  
+  full_dat$uid &lt;- paste(dat$apinspkey, dat$apfailkey, sep = &#39;.&#39;)
+  full_dat &lt;- full_dat[ , c(ncol(full_dat), 1:(ncol(dat)))]
+  return(full_dat)
+}
+
+
+renameFields &lt;- function(dat) {
+  # Rename fields and remove index field
+  #
+  # Args:
+  #   dat: a data frame with the necessary variables
+  #
+  # Returns:
+  #   The same data frame but renamed
+  #
+  
+  dat %&gt;%
+    select(-gid, -organizati, -unit) %&gt;%
+    dplyr::rename(
+      inspType = inspection,
+      inspDesc = inspecti_1,
+      inspCompl = inspecti_2,
+      inspStatus = inspecti_3,
+      long = geocode_x,
+      lat = geocode_y,
+      caseResDte = caseresolu,
+      caseResCde = casereso_1,
+      violDte = violationd,
+      violTpe = violationt,
+      violDesc = violatio_1) %&gt;%
+    return()
+}
+
+
+addViolYear &lt;- function(dat) {
+  # Add a violation year
+  #
+  # Args:
+  #   dat: a data frame with a violDte field
+  #
+  # Returns:
+  #   The same data frame but with violation year field
+  #
+  
+  dat %&gt;%
+    dplyr::mutate(violYear = lubridate::year(violDte)) %&gt;%
+    return()
+}
+
+
+removeNAs &lt;- function(dat) {
+  # Remove NA values from appropraite fields
+  #
+  # Args:
+  #   dat: a data frame with NA values
+  #
+  # Returns:
+  #   a data frame with NAs removes
+  #
+  
+  full_dat %&gt;%
+    drop_na(-c(ownername, address, censustrac)) %&gt;%
+    return()
+}
+
+
+measureFails &lt;- function(dat, row){
+  # Given a row, loop through the dataset measuring the outcomes before
+  # and after this point
+  #
+  # Args:
+  #   dat: data.table object containing the measurment row
+  #   row: the index of the row
+  #
+  # Returns:
+  #   a data.table of pre- and post- inspection outcomes
+  #
+  
+  dat &lt;- data.table(dat)
+
+  r.t &lt;- dat[row, c(&#39;uid&#39;, &#39;casenumber&#39;, &#39;apfailkey&#39;,
+                    &#39;inspCompl&#39;, &#39;inspStatus&#39;, &#39;violDte&#39;)]
+
+  subdat &lt;- dat[casenumber == r.t$casenumber &amp; apfailkey == r.t$apfailkey,
+                c(&#39;uid&#39;, &#39;casenumber&#39;, &#39;apfailkey&#39;,
+                  &#39;inspCompl&#39;, &#39;inspStatus&#39;, &#39;violDte&#39;)]
+
+  fails &lt;- data.table(uid = r.t$uid, before = 0, after = 0,
+                      rec.inspCompl = &#39;none&#39;, rec.inspStatus = &#39;none&#39;, 
+                      rec.uid = &quot;none&quot;)
+
+  for (r in 1:nrow(subdat)) {
+
+    r.m &lt;- subdat[r, ]
+
+    # if the test insp date is after the reference insp. date
+    if (!is.na(as.Date(r.m$inspCompl)) &amp;&amp; !is.na(as.Date(r.t$inspCompl))) {
+
+      if (r.t$inspCompl &gt; r.m$inspCompl) {
+
+        if (class(fails$rec.inspCompl) != &quot;Date&quot;) {
+
+          # update the &quot;recent&quot; variables
+          fails$rec.uid &lt;- r.m$uid
+          fails$rec.inspStatus &lt;- r.m$inspStatus
+          fails$rec.inspCompl &lt;- r.m$inspCompl
+
+          if (r.m$inspStatus == &quot;Failed&quot;) {
+
+            fails$before &lt;- fails$before + 1
+
+          }
+        } else if (fails$rec.inspCompl &lt; r.m$inspCompl) {
+
+          # update the &quot;recent&quot; variables
+          fails$rec.uid &lt;- r.m$uid
+          fails$rec.inspStatus &lt;- r.m$inspStatus
+          fails$rec.inspCompl &lt;- r.m$inspCompl
+
+          if (r.m$inspStatus == &quot;Failed&quot;) {
+            fails$before &lt;- fails$before + 1
+          }
+        }
+      } else if (r.t$inspCompl &lt; r.m$inspCompl &amp;&amp; r.m$inspStatus == &quot;Failed&quot;) {
+
+        fails$after &lt;- fails$after + 1
+
+      }
+    }
+  }
+  return(fails)
+}
+
+
+saveTimeStampedFile &lt;- function(obj, file = &quot;temp_file&quot;, time = FALSE) {
+  # save any object with an appended time stamp to the output folder
+  #
+  # Args:
+  #   obj: any type of object to save in an .Rdata file
+  #   file: the string for a portion of the filename without path, date
+  #         or file extension
+  #   specif: a boolean indicating whether to use the time-date (default
+  #           to false), or just the regular date
+  #
+  # Returns:
+  #   NA
+  #
+  # Side effects:
+  #    saves the object to output folder as .Rdata file
+  #
+  
+  if (time) {
+    str &lt;- paste0(&quot;output/&quot;, file, &quot;_&quot;, Sys.time(), &quot;.Rdata&quot;)
+  } else {
+    str &lt;- paste0(&quot;output/&quot;, file, &quot;_&quot;, Sys.Date(), &quot;.Rdata&quot;)
+  }
+  save(obj, file = str)
+}
+
+
+measureAllFails &lt;- function(dat) {
+  # Apply the measurefails function over every row, combining infot a
+  # data frame and binding to the original df
+  #
+  # Args:
+  #   dat: the data frame to measure
+  #
+  # Returns:
+  #   a new data frame with recent inspection data merged to it
+  #
+  # Side effects:
+  #    Prints a progress text bar
+  #    saves an Rdata file of the resulting dataet to the outpur folder
+  #
+
+  # loop over whole dataset
+  rec &lt;- ldply(c(1:nrow(dat)), measureFails, dat = dat, .progress = &quot;text&quot;)
+
+  # merge recents with original df
+  df_rec &lt;- merge(dat, rec, by = &quot;uid&quot;)
+
+  # save the dataset to output file
+  saveTimeStampedFile(df_rec, file = &quot;lni_15to17_withRecent&quot;, time = FALSE)
+
+  return(df_rec)
+}
+
+
+since &lt;- function(dat, var) {
+  # Measure the time between the date of a variable and the inspection
+  #
+  # Args:
+  #   dat: the data fram containing all variables
+  #   var: the field from df as a string
+  #
+  # Returns:
+  #   a vctor of durations
+  #
+  
+  comp &lt;- dat[ ,&quot;inspCompl&quot;] %&gt;% unlist() %&gt;% as.Date()
+  meas &lt;- dat %&gt;%
+    select(starts_with(var)) %&gt;%
+    unlist() %&gt;% as.Date()
+
+  as.numeric(comp - meas) %&gt;%
+    return()
+}
+
+
+durationVars &lt;- function(dat) {
+  # Apply the ince function to measure time elapsed since each one
+  #
+  # Args:
+  #   dat: data frame with the following fields (inspCompl,
+  #        caseaddedd, violDte, rec.inspCompl)
+  #
+  # Returns:
+  #   a data frame with three duaration vars
+  #   
+  
+  dat %&gt;%
+    mutate(
+      sinceCaseAdded = since(., &quot;caseaddedd&quot;),
+      sinceViolation = since(., &quot;violDte&quot;),
+      sinceLastInsp = since(., &quot;rec.inspCompl&quot;)
+    ) %&gt;%
+    return()
+}
+
+
+findLevels &lt;- function(dat, convertChars = FALSE, convertNums = FALSE) {
+  # Find the levels of each categorical variable in the dataset
+  #
+  # Args:
+  #   dat: data frame, to measure
+  #   convertChars: boolean, do you want to include character vars
+  #
+  # Returns:
+  #   a named integer of the levels of each factor variable
+  #   
+  
+  dat &lt;- as.data.frame(dat)
+
+  if (convertChars) {
+    dat &lt;- dat %&gt;%
+      mutate_if(is.character, as.factor)
+  }
+
+  if (convertNums) {
+    dat &lt;- dat %&gt;%
+      mutate_if(is.numeric, as.factor)
+  }
+
+  factDat &lt;- dat %&gt;% select_if(is.factor)
+
+  table &lt;- sapply(factDat, function(x) length(unique(x)))
+
+  return(table)
+}
+
+
+sumfailed &lt;- function(x) {
+  # Cont the number of instances of the string &#39;failed&#39; in a vector
+  #
+  # Args:
+  #   x: vector, to loop through
+  #
+  # Returns:
+  #   an integer count of &#39;failed&#39; observations
+  #
+  
+  nf &lt;- 0
+  for(i in x) {
+    if (i == &quot;Failed&quot;) {
+      nf &lt;- nf + 1
+    }
+  }
+  return(nf)
+}
+
+
+summariseInspections &lt;- function(dat) {
+  # Summarize to the inspection level
+  #
+  # Args:
+  #   dat: data frame, with all requisite fields
+  #
+  # Returns:
+  #   summarized data frame
+  #
+  
+  dat %&gt;%
+    group_by(apinspkey) %&gt;%
+    dplyr::summarise(
+
+      o.failed = sum(failed) / n(),
+      o.numFails = sum(failed),
+
+      e.numViol = n(),
+      e.prevFail = sumfailed(rec.inspStatus),
+      e.numFailTypes = n_distinct(violTpe),
+
+      f.before = first(before),
+      f.priorityde = first(priorityde),
+      f.recStatus = first(rec.inspStatus),
+      f.inspDesc = first(inspDesc),
+
+      s.sinceLastInsp = first(sinceLastInsp),
+      s.sinceViolation = first(sinceViolation),
+      s.sinceAdded = first(sinceCaseAdded),
+
+      i.casenumber = first(casenumber),
+      i.inspCompl = first(inspCompl),
+
+      l.long = first(long),
+      l.lat = first(lat),
+      l.address = first(address),
+      l.censustrac = first(censustrac),
+      l.addresskey = first(addresskey),
+      l.owner = first(ownername)
+
+    ) %&gt;%
+    dplyr::rename(
+      id.apinspkey = apinspkey) %&gt;%
+    return()
+}
+
+
+castAndSumm &lt;- function(dat, idVar, castVar, binary = TRUE) {
+  # Cast a categorical variable and summarise by id variable
+  #
+  # Args:
+  #   dat: data frame, with variables
+  #   idVar: string, the identification variable to summarize by
+  #   castVar: string, categorical factor variable to cast
+  #
+  # Returns:
+  #   A new data frame with unique observations of the idVar and dummy
+  #   vars for each level of the categorical var
+  #
+  
+  dat2 &lt;- dat %&gt;%
+    select(one_of(idVar, castVar)) %&gt;%
+    mutate(dummy = 1)
+
+  colnames(dat2) &lt;- c(&quot;idVar&quot;, &quot;castVar&quot;, &quot;dummy&quot;)
+
+  if (binary) {
+    summ &lt;- dcast.data.table(dat2, 
+                             idVar ~ castVar, 
+                             sep = &quot;.&quot;, 
+                             fun.aggregate = function(x) {
+      if (sum(x) &gt; 1) {
+        return(1)
+      } else {
+        return(sum(x))
+      }
+    }, value.var = &quot;dummy&quot;, fill = 0)
+  } else {
+    summ &lt;- dcast.data.table(dat2, idVar ~ castVar, 
+                             sep = &quot;.&quot;, 
+                             fun.aggregate = sum(), 
+                             value.var = &quot;dummy&quot;, 
+                             fill = 0)
+  }
+
+  colnames(summ) &lt;- c(
+    idVar,
+    paste0(castVar, &quot;.&quot;, c(1:(ncol(summ) - 1)))
+  )
+
+  return(summ)
+}
+
+
+castFactorVars &lt;- function(dat, var) {
+  # cast factor variables to a new data frame
+  #
+  # Args:
+  #   dat: data frame, with &quot;id.apinspkey&quot; and var to cast
+  #   var: string. name of the factor variable to cast
+  #
+  # Returns:
+  #   a dta frame with &#39;id.apinspkey&#39; and dummy varsiables
+  #
+  
+  form &lt;- paste0(&quot;id.apinspkey ~ &quot;, var)
+
+  if (grepl(&quot;f.&quot;, var, fixed = TRUE)) {
+    var &lt;- gsub(&quot;f.&quot;, &quot;&quot;, var)
+  }
+
+  df &lt;- dummyVars(form, data = dat, sep = &quot;.&quot;) %&gt;%
+    predict(dat) %&gt;%
+    data.frame()
+
+  names(df) &lt;- paste0(var, &quot;.&quot;, c(1:ncol(df)))
+
+  df &lt;- df %&gt;%
+    mutate(id.apinspkey = dat$id.apinspkey)
+
+  return(df)
+
+}
+
+
+getProj4String &lt;- function(crs) {
+  # Return the appropriate CRS object
+  #
+  # Args:
+  #   crs: string, specifying which coordinate proj4string object to
+  #        return - &#39;pas&#39; for PA South, &#39;wgs&#39; for web mercator
+  #
+  # Returns:
+  #   What the function returns
+  #
+  
+  if (crs == &quot;pas&quot;) {
+    return(CRS(&quot;+init=epsg:6565&quot;))
+  } else if (crs == &quot;wgs&quot;) {
+    return(CRS(&quot;+proj=longlat +datum=WGS84&quot;))
+  } else {
+    stop(&quot;Invalid CRS specification&quot;)
+  }
+}
+
+
+createPointPattern &lt;- function(
+  dat, long, lat, initCRS = &quot;wgs&quot;, transformCRS = &quot;wgs&quot;
+  ) {
+  # Create spatial objects from a data frame with coordinates
+  #
+  # Args:
+  #   dat: data frame, with two different coordinate fields
+  #   long: string, logitude field name
+  #   lat: string, latitude field name
+  #   initCRS: string, argument for getProj4String -- the coordinate
+  #            system of the lat/long fields. Defaults to &#39;wgs&#39;
+  #   transformCRS: string, argument for getProj4String -- the
+  #                 coordinate system to convert sp object to,
+  #                 defaults to &#39;wgs&#39;
+  #
+  # Returns:
+  #   A two object list
+  #     [[1]] pointDataFrame: a spatialPointsDataFrame
+  #     [[2]] pointPattern: a pointPattern
+  #
+  
+  coordsDat &lt;- cbind(
+    dat[ , long],
+    dat[ , lat]
+  )
+
+  spDf &lt;- SpatialPointsDataFrame(
+    coords = coordsDat,
+    data = dat,
+    proj4string = getProj4String(initCRS)
+  ) %&gt;% spTransform(getProj4String(transformCRS))
+
+  win &lt;- owin(spDf@bbox[1, ], spDf@bbox[2, ])
+
+  pp &lt;- ppp(x = spDf@coords[ ,1], y = spDf@coords[ ,2], window = win)
+
+  objList &lt;- list(&quot;pointDataFrame&quot; = spDf, &quot;pointPattern&quot; = pp)
+
+  return(objList)
+}
+
+
+getCases &lt;- function(ds) {
+  # Condense inspections dataset to a dataframe of cases
+  #
+  # Args:
+  #   ds: a dataframe of cases, must include the following fields
+  #     &#39;f.before&#39;, &#39;l.long&#39;, &#39;l.lat&#39;
+  #
+  # Returns:
+  #   A case-level data frame with a binary column indicating whether
+  #   the case is repeator or not
+  # 
+    
+  cases &lt;- ds %&gt;%
+    
+    mutate(f.before = as.numeric(as.character(f.before))) %&gt;%
+    group_by(i.casenumber) %&gt;% 
+    
+    dplyr::summarise(
+      f.before = max(f.before),
+      l.long = max(l.long),
+      l.lat = max(l.lat)
+    ) %&gt;% 
+    
+    mutate(repeator = ifelse(f.before &gt; 1, &quot;y&quot;, &quot;n&quot;))
+}
+
+
+average_dist &lt;- function(vec) {
+  # Find the average distance in a vector, accounting for a possible 
+  #   erroneous 0 value at position 1
+  #
+  # Args:
+  #   vec: a numeric vector, of distances
+  #
+  # Returns:
+  #   an average distance
+  # 
+    
+  l &lt;- length(vec)
+  
+  if (vec[1] == 0) {
+    newVec &lt;- vec[2:l]
+  } else {
+    newVec &lt;- vec[1: (l-1)]
+  }
+  
+  sum &lt;- newVec %&gt;% unname() %&gt;% sum()
+  
+  mean &lt;- sum / length(vec)
+  
+  return(mean)
+}
+
+
+avgDistBetween &lt;- function(data.pp, meas.pp, n) {
+  # Find the average distance between points within one pattern and
+  #   the nearest n points in a different pattern
+  #
+  # Args:
+  #   data.pp: point pattern, to measure the distances to
+  #   meas.pp: point pattern, of instances that you are interested
+  #     in the proximity of
+  #   n: integer, the number of instances in meas.pp that you would 
+  #     like to measure 
+  #
+  # Returns:
+  #   a vector of avergae distances to the n nearest points for
+  #   every instance of data.pp
+  #   
+  
+  p &lt;- nncross(data.pp, cases.pp, what = &quot;dist&quot;, k = c(1:n))
+  apply(as.matrix(p), 1, average_dist) %&gt;%
+    return()
+}
+
+
+getSpAutoCorr &lt;- function(n, cases.list) {
+  # Get a set of variables measuring the average distances to the
+  #   n nearkest repeators, non-repeators and other inspection
+  #
+  # Args:
+  #   n: integer, the number of neighbors
+  #   cases.list: a list of spDataFrame and point pattern, output of 
+  #               createPointPattern
+  #
+  # Returns:
+  #   a data frame of all features for a given value of n
+  # 
+    
+  cases.sp &lt;- cases.list[[1]]
+  cases.pp &lt;- cases.list[[2]]
+  
+  marks(cases.pp) &lt;- cases.sp@data$repeator
+  
+  repeators &lt;- subset(cases.pp, marks == &quot;y&quot;) %&gt;% unique()
+  nonrepeators &lt;- subset(cases.pp, marks == &quot;n&quot;) %&gt;% unique()
+  
+  p.all &lt;- nncross(cases.pp, cases.pp, what = &quot;dist&quot;, k = c(1:n))
+  p.repeators &lt;- nncross(cases.pp, repeators, what = &quot;dist&quot;, k = c(1:n))
+  p.nonrepeators &lt;- nncross(cases.pp, nonrepeators, 
+                            what = &quot;dist&quot;, k = c(1:n))
+  
+  avgDists.all &lt;- apply(as.matrix(p.all), 1, average_dist)
+  avgDists.rep &lt;- apply(as.matrix(p.repeators), 1, average_dist)
+  avgDists.nr &lt;- apply(as.matrix(p.nonrepeators), 1, average_dist) 
+  
+  p &lt;- data.frame(avgDists.all, avgDists.nr, avgDists.rep)
+  
+  p$avgDists.all &lt;- log(p$avgDists.all + 1)
+  p$avgDists.nr &lt;- log(p$avgDists.nr + 1)
+  p$avgDists.rep &lt;- log(p$avgDists.rep + 1)
+  p$avgDists.repOfAll &lt;- p$avgDists.rep / p$avgDists.all
+  
+  colnames(p) &lt;- paste0(&quot;e.&quot;, colnames(p), &quot;.n&quot;, n)
+  
+  return(p)
+}
+
+
+endogMain &lt;- function(ds, nlist) {
+  # Add endogenous variables to inspection level dataset
+  #
+  # Args:
+  #   ds: dataframe, inspection level dataset with requisite fields
+  #   nlist: vector of integers, the levels of neighbor to try
+  #
+  # Returns:
+  #   a copy of the ds dataset with new variables included
+  # 
+   
+  cases.list &lt;- getCases(ds) %&gt;%
+    createPointPattern(&quot;l.long&quot;, &quot;l.lat&quot;, &quot;wgs&quot;, &quot;pas&quot;) 
+  
+  pd &lt;- cases.list[[1]]@data %&gt;%
+    select(i.casenumber)
+  
+  for (i in nlist) {
+    p &lt;- getSpAutoCorr(i, cases.list)
+    pd &lt;- cbind(pd, p)
+  }
+  
+  dss &lt;- ds %&gt;%
+    left_join(pd) %&gt;% 
+    return()
+}
+
+
+squishToRange &lt;- function(vector, minbound = 0.05, maxbound = 0.95) {
+  # Remove outliers within a vector of continuous values
+  #
+  # Args:
+  #   vector: vector, a vector of numeric values
+  #   minboud: float, specifying the lower threshold for lowe
+  #     outlier values. Values below this threshold will be set to 
+  #     this value.
+  #   maxbourd: float, specifying the upper threshold for high
+  #     outlier values. Values above this threshold will be set to 
+  #     this value.
+  #
+  # Returns:
+  #   A numeric vector that fits with in the 5th-95th percentile
+  #   range of the original distribution
+  #   
+  
+  range &lt;- stats::quantile(vector, c(minbound, maxbound))
+  range &lt;- round(range)
+  newVector &lt;- scales::squish(vector, range)
+  return(newVector)
+}
+
+
+getFactorLevelLookup &lt;- function(vec, prefix) {
+  # Get a lookuptable to find the original vartiable class from a one-hot
+  #   encoded categorical variable
+  #
+  # Args:
+  #   vec: factor vector, of a categorical variables
+  #   prefix: string, that will be the prefix for all of these features in
+  #     the final dataset
+  #
+  # Returns:
+  #   a data frame with one column indicating the variable name in the 
+  #     final dataset and the other showing the original factor
+  #   
+  
+  data.frame(name = levels(vec), level = c(1:length(table(vec)))) %&gt;%
+    mutate(level = paste0(prefix, &quot;.&quot;, level)) %&gt;%
+    return
+  
+}
+
+# model-selection.R -------------------------------------------------------
+
+factor_to_numeric &lt;- function(fac) {
+  # Convert a factor to numeric equivalent of characters
+  #
+  # Args:
+  #   fac: a factor or vector of factors
+  #
+  # Returns:
+  #   a number or numeric vector
+  #   
+  
+  fac %&gt;%
+    as.character %&gt;%
+    as.numeric %&gt;%
+    return
+}
+
+
+getVarNames &lt;- function(all_vars, prefixes) {
+  # Subset a vector of variable names based on the first two letter 
+  #
+  # Args:
+  #   all_vars: string vector, to filter
+  #   prefixes: string or string vector, of two letter prefixe(s). Names
+  #     that start with any of these will be returned
+  #
+  # Returns:
+  #   A vector of variable names (strings) 
+  #   
+  
+  keep &lt;- c()
+  
+  for (i in all_vars) {
+    pre &lt;- substr(i, 1, 2)
+    if (pre %in% prefixes) {
+      keep &lt;- c(keep, i)
+    }
+  }
+  
+  return(keep)
+}
+
+
+get_from_grid &lt;- function(grid_id, valid_frame) {
+  # Return a list of objects from an h2o grid
+  #
+  # Args:
+  #   grid_id: string, the id for the grid in question
+  #   valid_frame: h2OFrame, to predict for
+  #
+  # Returns:
+  #   A list of results objects
+  #     [[1]] the original h2o grid 
+  #     [[2]] the best model, determined by CV AUC
+  #     [[3]] a data frame with fields for predicted values as well as
+  #           binary predictions
+  #   
+  
+  # sort results descending by auc
+  sorted_models &lt;- h2o.getGrid(
+    grid_id = grid_id,
+    sort_by = &quot;auc&quot;,
+    decreasing = T
+  )
+  
+  # get best model
+  best_mod &lt;- h2o.getModel(sorted_models@model_ids[[1]])
+  
+  # make predctions on validation set
+  prefix &lt;- gsub(&quot;\\..*&quot;, &quot;&quot;, grid_id)
+  
+  pred &lt;- h2o.predict(best_mod, valid_frame) %&gt;%
+    as.data.frame %&gt;%
+    select(-p0) %&gt;%
+    mutate_if(is.factor, funs(factor_to_numeric)) %&gt;%
+    mutate(
+      correct = ifelse(as.data.frame(valid)$o.failed.n == predict, 1, 0))
+  
+  colnames(pred) &lt;- paste0(prefix, &quot;.&quot;, colnames(pred))
+  
+  # create a list with all three objects
+  from_grid &lt;- list(sorted_models, best_mod, pred)
+  
+  names(from_grid) &lt;- c(
+    paste0(prefix, &quot;.sorted_models&quot;),
+    paste0(&quot;fit.&quot;, prefix, &quot;.tuned.h2o&quot;),
+    paste0(&quot;pred.&quot;, prefix)
+  )
+  
+  return(from_grid)
+}
+
+
+getInteractionVars &lt;- function(frame, vars, bind = TRUE) {
+  # Get pairwise interaction variables of specified columns in 
+  #   h2o dataframe
+  #
+  # Args:
+  #   frame: an h2o data frame
+  #   vars: vector of strings, names of fields to
+  #     to use as interaction variables
+  #   bind: boolean, whould the data frame of interaction
+  #     variables be bound to the original data frame (TRUE)
+  #     or returned as their own df (FALSE)
+  #
+  # Returns:
+  #   an h2o dataframe containing either just the interaction
+  #   variables or the original df with interaction vars appended
+  #   
+  
+  pw &lt;- h2o.interaction(
+    frame, 
+    destination_frame = &#39;pairwise&#39;,
+    factors = list(vars),
+    pairwise=TRUE, 
+    max_factors = 10, 
+    min_occurrence = 1
+  ) 
+  
+  if (bind) {
+    all &lt;- h2o.cbind(frame, pw)
+    return(all)
+  } else {
+    return(pw)
+  }
+}
+
+
+h2oLogMod &lt;- function(x, model_id, training_frame = train.h2o) {
+  # Train an h2o logistic regression with specific params
+  #
+  # Args:
+  #   pred_vars: string, inhereted from h2o.glm
+  #   model_id: string, inhereted from h2o.glm
+  #   training_frame: h2o data frame, inhereted from h2o.glm
+  #
+  # Returns:
+  #   an h2o glm model
+  #   
+  
+  h2o.glm(
+    y = &quot;o.failed.f&quot;,
+    x = pred_vars,
+    model_id = model_id,
+    training_frame = training_frame,
+    nfolds = 10,
+    lambda_search = TRUE,
+    family = &quot;binomial&quot;,
+    standardize = TRUE,
+    alpha = 0.25
+  )
+}
+
+
+getPredictions &lt;- function(x, validation_frame) {
+  # Get predictions from an h2o model 
+  #
+  # Args:
+  #   x: an h2o model
+  #   validation_frame: h2o dataframe, to predict for
+  #
+  # Returns:
+  #   A data frame of predictions/predicted probabilities
+  #   
+  
+  name &lt;- x[[1]]
+  pred_df &lt;- h2o.predict(x[[2]], validation_frame) %&gt;%
+    as.data.frame %&gt;%
+    mutate(var = name) %&gt;%
+    select(-p0)
+  names(pred_df) &lt;- paste0(name, &quot;.&quot;, names(pred_df))
+  return(pred_df)
+}
+# data-vizualization.R ----------------------------------------------------
+
+# Color palette to use for visualizations
+#   General palette
+pal &lt;- c(&quot;#5876BF&quot;, &quot;#126075&quot;, &quot;#2C7A90&quot;, &quot;#ECE2C9&quot;, &quot;#8D1B1A&quot;, 
+         &quot;#FFFFFF&quot;,&quot;#7F7F7F&quot;, &quot;#000000&quot;)
+#   Specific palette for waffle plots
+waffle_pal &lt;- c(&quot;#126075&quot;,&quot;#8cd8ed&quot;,&quot;#8D1B1A&quot;,&quot;#ea908f&quot;)
+
+
+plotTheme &lt;- function(text_color = 8, strip_color = 4, title_color = 2, map = FALSE) {
+  # Define a set of reusable ggplot theme parameters
+  #
+  # Args:
+  #   text_color: integer, index of a color in pal to use for all text
+  #   strip_color: integer, index of a color in pal to use for ggplot facet
+  #     strips
+  #   map: boolean, determines whether to use the void or minimal base theme
+  #
+  # Returns:
+  #   a set of theme parameters to format a ggplot2 plot
+  #   
+  
+  if (map) {
+    base &lt;- theme_void() 
+  } else {
+    base &lt;- theme_minimal()
+  }
+  base +
+    theme(
+      plot.margin = unit(c(0.5,0.5,0.5,0.5), &quot;cm&quot;),
+      text = element_text(
+        color = pal[text_color],
+        size = 10),
+      plot.title = element_text(
+        hjust = 0, 
+        face = &quot;bold&quot;, 
+        margin = margin(b = 3),
+        size = 11,
+        color = pal[title_color]),
+      plot.subtitle = element_text(
+        hjust = 0, 
+        face = &quot;italic&quot;,
+        margin = margin(b = 10),
+        color = pal[title_color]),
+      legend.direction = &quot;vertical&quot;, 
+      legend.position = &quot;right&quot;, 
+      legend.key.height = unit(1, &quot;cm&quot;), 
+      legend.key.width = unit(0.2, &quot;cm&quot;),
+      legend.title = element_text(
+        size = 8,
+        face = &quot;italic&quot;,
+        vjust = -2),
+      plot.caption = element_text(
+        size = 8,
+        hjust = 0,
+        face = &quot;italic&quot;),
+      strip.background = element_rect(
+        color = pal[strip_color]),
+      axis.title = element_text(
+        hjust = 1,
+        face = &quot;italic&quot;
+      )
+    )
+}
+
+
+tidy_confusion_matrix &lt;- function(dat, response_var, pred_var) {
+  # Output a tidies dataset for confusion matrix map
+  #
+  # Args:
+  #   dat: data frame with result vars
+  #   response_var: string, name of response variable
+  #   pred_var: string, name of prediction outcome variable
+  #
+  # Returns:
+  #   A data frame with confusion matrix fields
+  #   
+  
+  d &lt;- dat %&gt;%
+    select(one_of(c(response_var, pred_var, &quot;l.long&quot;, &quot;l.lat&quot;)))
+  names(d) &lt;- c(&quot;response&quot;, &quot;pred&quot;, &quot;long&quot;, &quot;lat&quot;)
+  d &lt;- d %&gt;%
+    mutate(
+      true_positive = ifelse(response == 1 &amp; pred == 1, 1, 0),
+      true_negative = ifelse(response == 0 &amp; pred == 0, 1, 0),
+      false_positive = ifelse(response == 1 &amp; pred == 0, 1, 0),
+      false_negative = ifelse(response == 0 &amp; pred == 1, 1, 0)
+    )
+  return(d)
+}</code></pre>
 
 
 

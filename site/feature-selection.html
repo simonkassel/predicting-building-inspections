@@ -11,7 +11,7 @@
 
 
 
-<title></title>
+<title>Feature Selection</title>
 
 <script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -203,11 +203,47 @@ $(document).ready(function () {
 
 
 
+<h1 class="title toc-ignore">Feature Selection</h1>
 
 </div>
 
 
+<pre class="r"><code># helper functions 
+source(&quot;R/helper-functions.R&quot;)
 
+# source(&#39;LNI-analysis-feature-engineering.R&#39;)
+load(&quot;data/full_dataset_for_modeling.Rdata&quot;)
+
+# packages
+packages(
+  c(
+    &quot;tidyverse&quot;,
+    &quot;caret&quot;,
+    &quot;Boruta&quot;
+  )
+)
+
+# boruta ------------------------------------------------------------------
+
+# extract just the predictor variable candidates
+dd &lt;- ds %&gt;%
+  select(one_of(mod_vars))
+
+# partition dataset for boruta
+set.seed(12345)
+inTrain &lt;- createDataPartition(dd$o.failed.n, p = 0.6, list = FALSE)
+boruta.train.set &lt;- dd[inTrain, -c(1,2)]
+
+# run iterative random forrest variable importance test
+boruta.train &lt;- Boruta(o.failed ~ ., data = train, doTrace = 2)
+# get final decision
+fd &lt;- boruta.train$finalDecision
+
+# generate a list of non-useful variables
+rejected_vars &lt;- fd[which(fd != &quot;Confirmed&quot;)] %&gt;% names
+
+# save output
+save(boruta.train.set, rejected_vars, file = &quot;data/boruta.train.Rdata&quot;)</code></pre>
 
 
 
