@@ -1,46 +1,21 @@
 ---
 title: "Data Wrangling and Feature Engineering"
 ---
+&nbsp;
 
-Insert text about this section
+Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla laoreet malesuada purus. Aliquam non odio ut erat lacinia mollis. Ut scelerisque nisi mauris, a convallis ante elementum eget. Maecenas enim nulla, suscipit ac nisl et, varius varius neque. Phasellus non posuere erat, a faucibus tellus. Morbi id consequat lorem. Praesent nec tincidunt lorem. Duis maximus venenatis ipsum, eu pulvinar mi semper et. Curabitur vel dolor nunc. Nunc ornare justo tellus, ut cursus sapien ultricies vitae. Phasellus sapien dolor, ultrices id tortor vitae, blandit ultrices mi. Etiam at magna vitae ipsum consectetur iaculis. Etiam quis felis tortor. Nam tempus convallis pulvinar.
+
+&nbsp;
+
+## Load and wrangle data
+Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla laoreet malesuada purus. Aliquam non odio ut erat lacinia mollis. Ut scelerisque nisi mauris, a convallis ante elementum eget. Maecenas enim nulla, suscipit ac nisl et, varius varius neque. Phasellus non posuere erat, a faucibus tellus. Morbi id consequat lorem. Praesent nec tincidunt lorem. Duis maximus venenatis ipsum, eu pulvinar mi semper et. Curabitur vel dolor nunc. Nunc ornare justo tellus, ut cursus sapien ultricies vitae. Phasellus sapien dolor, ultrices id tortor vitae, blandit ultrices mi. Etiam at magna vitae ipsum consectetur iaculis. Etiam quis felis tortor. Nam tempus convallis pulvinar.
+&nbsp;
 
 ```{r eval=FALSE}
-###########################################################################
-## PROJECT: L+I predictive modeling
-##
-## SCRIPT PURPOSE: Feature engineering
-##    - combine violation and inspection datasets
-##    - measure before and after outcomes for each inspections
-##    - engineer features from license and inspection dataset
-##    - create new variables from additional city datasets
-##    - remove unnecessary fields
-##    - export final dataset for model building
-##
-## DATE: 18 July 2017
-## AUTHOR: Simon Kassel
-###########################################################################
-
-# helper functions 
-source("R/helper-functions.R")
 
 # packages
-packages(
-  c("tidyverse",
-    "data.table",
-    "sp",
-    "rgdal",
-    "lubridate",
-    "plyr",
-    "forcats",
-    "caret",
-    "spatstat",
-    "RCurl",
-    "jsonlite"
-    )
-  )
-
-
-# LOAD AND WRANGLE DATA ---------------------------------------------------
+packages(c("tidyverse", "data.table", "sp", "rgdal", "lubridate", "plyr",
+  "forcats", "caret", "spatstat", "RCurl", "jsonlite"))
 
 # load spatial datasets
 load("data/lni_data.Rdata")
@@ -61,13 +36,9 @@ full_dat <- cleanData(full_dat)
 filtered_dat <- filterData(full_dat)
 
 # associate each inspection with other inspections in its case
-#   measure outcomes of the same case before and after the inspection 
+#   measure outcomes of the same case before and after the inspection
 #     in question
 filtered_dat <- measureAllFails(filtered_dat)
-
-# REMOVE
-# to obtain this dataset dataset:
-load("output/data/lni_15to17_withRecent_2017-07-18.Rdata")
 
 # remove the initial inspection instances
 df <- filtered_dat %>%
@@ -77,8 +48,25 @@ df <- filtered_dat %>%
   .[, c("organizati", "unit", "apdesc", "aptype") := NULL] %>%
   na.omit()
 
+```
 
-# FEATURE ENGINEERING -----------------------------------------------------
+&nbsp;
+
+Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla laoreet malesuada purus. Aliquam non odio ut erat lacinia mollis. Ut scelerisque nisi mauris, a convallis ante elementum eget. Maecenas enim nulla, suscipit ac nisl et, varius varius neque. Phasellus non posuere erat, a faucibus tellus. Morbi id consequat lorem. Praesent nec tincidunt lorem.
+
+&nbsp;
+
+![*Fig. 1 - Measuring inspection outcomes over the lifetime of a case*](../output/plots/placeholder.jpg)
+
+&nbsp;
+
+Duis maximus venenatis ipsum, eu pulvinar mi semper et. Curabitur vel dolor nunc. Nunc ornare justo tellus, ut cursus sapien ultricies vitae. Phasellus sapien dolor, ultrices id tortor vitae, blandit ultrices mi. Etiam at magna vitae ipsum consectetur iaculis. Etiam quis felis tortor. Nam tempus convallis pulvinar.
+
+&nbsp;
+
+## Feature Engineering
+
+```{r eval=FALSE}
 
 # create additional variables
 df$zipShort <- substr(df$zip, 1, 5) %>% as.factor()
@@ -88,15 +76,26 @@ df$before <- as.factor(df$before)
 # add 3 variables indicating durations from previous events in lifecycle of
 #   building case
 df <- durationVars(df)
+```
+&nbsp;
 
-# extract 'violation type' variable and remove levels ocurring < 0.02% 
+Duis maximus venenatis ipsum, eu pulvinar mi semper et. Curabitur vel dolor nunc. Nunc ornare justo tellus, ut cursus sapien ultricies vitae. Phasellus sapien dolor, ultrices id tortor vitae, blandit ultrices mi. Etiam at magna vitae ipsum consectetur iaculis. Etiam quis felis tortor. Nam tempus convallis pulvinar.
+
+&nbsp;
+
+![*Fig. 2 - Time variables*](../output/plots/fig.x-Joy_plots.png)
+
+&nbsp;
+
+```{r eval=FALSE}
+# extract 'violation type' variable and remove levels occurring < 0.02%
 #   of the time
 df_violTpe  <- df %>%
   select(apinspkey, violDesc) %>%
   mutate(violTpe = fct_lump(violDesc, p = 0.02)) %>%
   dplyr::rename(id.apinspkey = apinspkey)
 
-# generate a lookup table to get the names of violation types (for later 
+# generate a lookup table to get the names of violation types (for later
 #   use)
 violType_lookup <- getFactorLevelLookup(df_violTpe$violTpe, "violTpe")
 
@@ -104,11 +103,32 @@ violType_lookup <- getFactorLevelLookup(df_violTpe$violTpe, "violTpe")
 #   numeric dummy variables
 df_violTpe <- castAndSumm(df_violTpe, "id.apinspkey", "violTpe", binary = FALSE)
 
+```
 
-# SUMMARISE TO THE INSPECTION LEVEL ---------------------------------------
+&nbsp;
 
-# collapse dataset to the inspection level, summarising 
+![*Fig. 3 - Levels of L&I data*](../output/plots/fig.x-Levels-of-data-bar-charts.png)
+
+&nbsp;
+
+```{r eval=FALSE}
+
+# collapse dataset to the inspection level, summarizing
 ds <- summariseInspections(df)
+
+```
+
+&nbsp;
+
+Duis maximus venenatis ipsum, eu pulvinar mi semper et. Curabitur vel dolor nunc. Nunc ornare justo tellus, ut cursus sapien ultricies vitae. Phasellus sapien dolor, ultrices id tortor vitae, blandit ultrices mi. Etiam at magna vitae ipsum consectetur iaculis. Etiam quis felis tortor. Nam tempus convallis pulvinar.
+
+&nbsp;
+
+![*Fig. 4 - Mapping the response variable*](../output/plots/fig.x-Map_of_fails_and_passes.png)
+
+&nbsp;
+
+```{r eval=FALSE}
 
 # measure for spatial autocorrelation among repeat violators
 ds <- endogMain(ds, nlist = c(5, 10))
@@ -117,7 +137,7 @@ ds <- endogMain(ds, nlist = c(5, 10))
 ds$f.inspDesc <- fct_lump(ds$f.inspDesc, prop = 0.02)
 ds$f.recStatus <- fct_lump(ds$f.recStatus, prop = 0.02)
 
-# miscellenous feature engineering
+# miscellaneous feature engineering
 ds <- ds %>%
   mutate(f.numFailTypes = as.factor(squishToRange(e.numFailTypes))) %>%
   mutate(f.numViol = as.factor(squishToRange(e.numViol))) %>%
@@ -125,9 +145,16 @@ ds <- ds %>%
   select(-e.numFailTypes, -e.numViol, -e.prevFail) %>%
   filter(is.finite(e.avgDists.repOfAll.n5))
 
+```
 
-# EXTERNAL DATA SOURCES ---------------------------------------------------
+&nbsp;
 
+## External Data Sources
+Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla laoreet malesuada purus. Aliquam non odio ut erat lacinia mollis. Ut scelerisque nisi mauris, a convallis ante elementum eget. Maecenas enim nulla, suscipit ac nisl et, varius varius neque. Phasellus non posuere erat, a faucibus tellus. Morbi id consequat lorem. Praesent nec tincidunt lorem. Duis maximus venenatis ipsum, eu pulvinar mi semper et. Curabitur vel dolor nunc. Nunc ornare justo tellus, ut cursus sapien ultricies vitae. Phasellus sapien dolor, ultrices id tortor vitae, blandit ultrices mi. Etiam at magna vitae ipsum consectetur iaculis. Etiam quis felis tortor. Nam tempus convallis pulvinar.
+
+&nbsp;
+
+```{r eval=FALSE}
 # vacant property indicators
 # read dataset
 vpi <- read.csv("http://data.phl.opendata.arcgis.com/datasets/f7ed68293c5\
@@ -173,10 +200,20 @@ ds.temp <- ds %>%
 
 # and bind it to the master dataset
 ds <- cbind(ds, ds.temp)
+```
 
+&nbsp;
 
+## Dealing with categorical variables
+Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla laoreet malesuada purus. Aliquam non odio ut erat lacinia mollis. Ut scelerisque nisi mauris, a convallis ante elementum eget. Maecenas enim nulla, suscipit ac nisl et, varius varius neque. Phasellus non posuere erat, a faucibus tellus. Morbi id consequat lorem. Praesent nec tincidunt lorem. Duis maximus venenatis ipsum, eu pulvinar mi semper et. Curabitur vel dolor nunc. Nunc ornare justo tellus, ut cursus sapien ultricies vitae. Phasellus sapien dolor, ultrices id tortor vitae, blandit ultrices mi. Etiam at magna vitae ipsum consectetur iaculis. Etiam quis felis tortor. Nam tempus convallis pulvinar.
 
-# ONE-HOT ENCODE CATEGORICAL VARIABLES ------------------------------------
+&nbsp;
+
+![*Fig. 4 - One hot encoding (Source: source)*](../output/plots/placeholder.jpg)
+
+&nbsp;
+
+```{r eval=FALSE}
 
 # get list of factor variable names
 names <- ds %>%
@@ -185,7 +222,7 @@ names <- ds %>%
   as.list
 
 # encode each of these as  a series of binary dummy variables
-factor_variable_list <- llply(names, castFactorVars, dat = ds, 
+factor_variable_list <- llply(names, castFactorVars, dat = ds,
                               .progress = "text")
 
 # join all categorical data variable dfs together
@@ -209,22 +246,8 @@ mod_vars <- ds %>% select(
   names
 non_mod_vars <- setdiff(names(ds), mod_vars)
 
-
-# FACTOR LOOK-UP TABLES ---------------------------------------------------
-
-# create a series of reference variable lookup tables for later use
-lookup <- rbind(
-  violType_lookup,
-  getFactorLevelLookup(ds$f.inspDesc, "inspDesc"),
-  getFactorLevelLookup(ds$f.recStatus, "recStatus"),
-  getFactorLevelLookup(ds$f.priorityde, "priorityde")
-)
-
-
-# SAVE --------------------------------------------------------------------
-
-# save objects for use in following scripts
-save(ds, mod_vars, non_mod_vars, lookup, file = "data/full_dataset_for_modeling.Rdata")
-save(df, file = "data/failure_level_dataset.Rdata")
-
 ```
+
+&nbsp;
+
+Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla laoreet malesuada purus. Aliquam non odio ut erat lacinia mollis. Ut scelerisque nisi mauris, a convallis ante elementum eget. Maecenas enim nulla, suscipit ac nisl et, varius varius neque. Phasellus non posuere erat, a faucibus tellus. Morbi id consequat lorem. Praesent nec tincidunt lorem. Duis maximus venenatis ipsum, eu pulvinar mi semper et. Curabitur vel dolor nunc. Nunc ornare justo tellus, ut cursus sapien ultricies vitae. Phasellus sapien dolor, ultrices id tortor vitae, blandit ultrices mi. Etiam at magna vitae ipsum consectetur iaculis. Etiam quis felis tortor. Nam tempus convallis pulvinar.

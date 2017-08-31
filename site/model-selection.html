@@ -11,7 +11,7 @@
 
 
 
-<title>Data Wrangling and Feature Engineering</title>
+<title>Model Selection</title>
 
 <script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -189,7 +189,7 @@ $(document).ready(function () {
   <a href="model-selection.html">model selection</a>
 </li>
 <li>
-  <a href="feature-selection.html">data visualization</a>
+  <a href="results.html">results</a>
 </li>
 <li>
   <a href="helper-functions.html">helper functions</a>
@@ -203,44 +203,33 @@ $(document).ready(function () {
 
 
 
-<h1 class="title toc-ignore">Data Wrangling and Feature Engineering</h1>
+<h1 class="title toc-ignore">Model Selection</h1>
 
 </div>
 
 
-<p>Insert text about this section</p>
-<pre class="r"><code># helper functions 
-source(&quot;R/helper-functions.R&quot;)
-
-# source(&#39;R/data-wrangling-and-feature-engineering.R&#39;)
-load(&quot;data/full_dataset_for_modeling.Rdata&quot;)
-
-# source(&#39;R/feature-selection.R&#39;)
-load(&quot;data/boruta.train.Rdata&quot;)
-
-# packages
-packages(
-  c(
-    &quot;tidyverse&quot;,
-    &quot;data.table&quot;,
-    &quot;sp&quot;,
-    &quot;caret&quot;,
-    &quot;plyr&quot;,
-    &quot;pROC&quot;,
-    &quot;statmod&quot;,
-    &quot;h2o&quot;,
-    &quot;Boruta&quot;
-  )
-)
+<p> </p>
+<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla laoreet malesuada purus. Aliquam non odio ut erat lacinia mollis. Ut scelerisque nisi mauris, a convallis ante elementum eget. Maecenas enim nulla, suscipit ac nisl et, varius varius neque. Phasellus non posuere erat, a faucibus tellus. Morbi id consequat lorem. Praesent nec tincidunt lorem. Duis maximus venenatis ipsum, eu pulvinar mi semper et. Curabitur vel dolor nunc. Nunc ornare justo tellus, ut cursus sapien ultricies vitae. Phasellus sapien dolor, ultrices id tortor vitae, blandit ultrices mi. Etiam at magna vitae ipsum consectetur iaculis. Etiam quis felis tortor. Nam tempus convallis pulvinar.</p>
+<p> </p>
+<div id="load-and-wrangle-data" class="section level2">
+<h2>Load and wrangle data</h2>
+<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla laoreet malesuada purus. Aliquam non odio ut erat lacinia mollis. Ut scelerisque nisi mauris, a convallis ante elementum eget. Maecenas enim nulla, suscipit ac nisl et, varius varius neque. Phasellus non posuere erat, a faucibus tellus. Morbi id consequat lorem. Praesent nec tincidunt lorem. Duis maximus venenatis ipsum, eu pulvinar mi semper et. Curabitur vel dolor nunc. Nunc ornare justo tellus, ut cursus sapien ultricies vitae. Phasellus sapien dolor, ultrices id tortor vitae, blandit ultrices mi. Etiam at magna vitae ipsum consectetur iaculis. Etiam quis felis tortor. Nam tempus convallis pulvinar.</p>
+<p> </p>
+<pre class="r"><code># packages
+packages(c(&quot;tidyverse&quot;, &quot;data.table&quot;, &quot;sp&quot;, &quot;caret&quot;, &quot;plyr&quot;, &quot;pROC&quot;, &quot;statmod&quot;,
+           &quot;h2o&quot;, &quot;Boruta&quot;))
 
 # baseline accuracy
-max(table(ds$o.failed.n)) / nrow(ds)
-# 0.57223
-
-# SUBSET DATA -------------------------------------------------------------
-
-# remove rejected vars
-d &lt;- ds %&gt;% 
+print(&quot;Baseline Accuracy: &quot;)
+round(max(table(ds$o.failed.n)) / nrow(ds), 2)</code></pre>
+<p> </p>
+<p>vel dolor nunc. Nunc ornare justo tellus, ut cursus sapien ultricies vitae.</p>
+<p> </p>
+</div>
+<div id="partition-dataset" class="section level2">
+<h2>Partition Dataset</h2>
+<pre class="r"><code># remove rejected vars
+d &lt;- ds %&gt;%
   select(-one_of(rejected_vars))
 
 # partition dataset
@@ -250,12 +239,13 @@ train &lt;- d[inTrain, ]
 valid &lt;- d[-inTrain, ]
 
 # list of predictor variables
-pred_vars &lt;- setdiff(names(d), c(non_mod_vars, &quot;o.failed.n&quot;, &quot;o.failed.f&quot;))
-
-
-# H2O ---------------------------------------------------------------------
-
-# initialize h2o cluster
+pred_vars &lt;- setdiff(names(d), c(non_mod_vars, &quot;o.failed.n&quot;, &quot;o.failed.f&quot;))</code></pre>
+</div>
+<div id="h2o" class="section level2">
+<h2>H2O</h2>
+<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla laoreet malesuada purus. Aliquam non odio ut erat lacinia mollis. Ut scelerisque nisi mauris, a convallis ante elementum eget. Maecenas enim nulla, suscipit ac nisl et, varius varius neque. Phasellus non posuere erat, a faucibus tellus. Morbi id consequat lorem. Praesent nec tincidunt lorem. Duis maximus venenatis ipsum, eu pulvinar mi semper et. Curabitur vel dolor nunc. Nunc ornare justo tellus, ut cursus sapien ultricies vitae. Phasellus sapien dolor, ultrices id tortor vitae, blandit ultrices mi. Etiam at magna vitae ipsum consectetur iaculis. Etiam quis felis tortor. Nam tempus convallis pulvinar.</p>
+<p> </p>
+<pre class="r"><code># initialize h2o cluster
 localhost &lt;- h2o.init(nthreads = -1, max_mem_size = &quot;8G&quot;)
 
 # open flow in web browser
@@ -269,15 +259,18 @@ valid.h2o &lt;- as.h2o(valid)
 
 # define parameter search criteria grid
 search.criteria &lt;- list(
-  strategy = &quot;RandomDiscrete&quot;, 
+  strategy = &quot;RandomDiscrete&quot;,
   max_runtime_secs = 900,
-  stopping_rounds = 5, 
+  stopping_rounds = 5,
   stopping_metric = &quot;AUTO&quot;
-)
-
-# GLM ---------------------------------------------------------------------
-
-# subset variables into different categories
+)</code></pre>
+<p> </p>
+</div>
+<div id="logistic-regression" class="section level2">
+<h2>Logistic Regression</h2>
+<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla laoreet malesuada purus. Aliquam non odio ut erat lacinia mollis. Ut scelerisque nisi mauris, a convallis ante elementum eget. Maecenas enim nulla, suscipit ac nisl et, varius varius neque. Phasellus non posuere erat, a faucibus tellus. Morbi id consequat lorem. Praesent nec tincidunt lorem. Duis maximus venenatis ipsum, eu pulvinar mi semper et. Curabitur vel dolor nunc. Nunc ornare justo tellus, ut cursus sapien ultricies vitae. Phasellus sapien dolor, ultrices id tortor vitae, blandit ultrices mi. Etiam at magna vitae ipsum consectetur iaculis. Etiam quis felis tortor. Nam tempus convallis pulvinar.</p>
+<p> </p>
+<pre class="r"><code># subset variables into different categories
 fact_vars &lt;- getVarNames(names(train.h2o), &quot;f.&quot;)
 vi_vars &lt;- getVarNames(names(train.h2o), &quot;vi&quot;)
 cont_vars &lt;- getVarNames(pred_vars, c(&quot;s.&quot;))
@@ -290,15 +283,15 @@ alphas &lt;- seq(0, 1, 0.1)
 
 # Parameter tuning:
 glm.tune.grid &lt;- h2o.grid(
-  algorithm = &quot;glm&quot;, 
+  algorithm = &quot;glm&quot;,
   hyper_params = list(alpha = alphas),
-  y = &quot;o.failed.f&quot;, 
+  y = &quot;o.failed.f&quot;,
   x = glm_pred_vars,
   grid_id = &quot;glm.tune.grid&quot;,
   training_frame = train.h2o,
   nfolds = 10,
   lambda_search = TRUE,
-  family = &quot;binomial&quot;, 
+  family = &quot;binomial&quot;,
   standardize = TRUE
 )
 
@@ -307,12 +300,14 @@ glm_results &lt;- get_from_grid(&quot;glm.tune.grid&quot;, valid.h2o)
 
 # save results
 glm_mod &lt;- glm_results$fit.glm.tuned.h2o
-save(glm_mod, file = &quot;output/glm_final_mod.Rdata&quot;)
-
-
-# GLM INTERACTION MODEL ---------------------------------------------------
-
-# get interaction variables for train/test sets
+save(glm_mod, file = &quot;output/glm_final_mod.Rdata&quot;)</code></pre>
+<p> </p>
+</div>
+<div id="logistic-regression-with-interaction" class="section level2">
+<h2>Logistic Regression with interaction</h2>
+<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla laoreet malesuada purus. Aliquam non odio ut erat lacinia mollis. Ut scelerisque nisi mauris, a convallis ante elementum eget. Maecenas enim nulla, suscipit ac nisl et, varius varius neque. Phasellus non posuere erat, a faucibus tellus. Morbi id consequat lorem. Praesent nec tincidunt lorem. Duis maximus venenatis ipsum, eu pulvinar mi semper et. Curabitur vel dolor nunc. Nunc ornare justo tellus, ut cursus sapien ultricies vitae. Phasellus sapien dolor, ultrices id tortor vitae, blandit ultrices mi. Etiam at magna vitae ipsum consectetur iaculis. Etiam quis felis tortor. Nam tempus convallis pulvinar.</p>
+<p> </p>
+<pre class="r"><code># get interaction variables for train/test sets
 pairwise &lt;- getInteractionVars(train.h2o, realf, bind = FALSE)
 int_train &lt;- h2o.cbind(train.h2o, pairwise)
 int_valid &lt;- getInteractionVars(valid.h2o, realf)
@@ -353,16 +348,16 @@ all_glm_results &lt;- llply(all_glm_mods, getPredictions, validation_frame = int
 # Tuned parameters:
 # define hyperparameter grid
 gbm.grid &lt;- list(
-  learn_rate = seq(.03,.05,.01), 
+  learn_rate = seq(.03,.05,.01),
   max_depth = c(8:10),
-  sample_rate = seq(0.7, 1.0, 0.1), 
+  sample_rate = seq(0.7, 1.0, 0.1),
   col_sample_rate = seq(0.4, 1.0, 0.1)
 )
 
 # search parameter grid
 gbm.tune.grid &lt;- h2o.grid(
-  algorithm = &quot;gbm&quot;, 
-  grid_id = &quot;gbm.tune.grid&quot;, 
+  algorithm = &quot;gbm&quot;,
+  grid_id = &quot;gbm.tune.grid&quot;,
   y = &quot;o.failed.f&quot;,
   x = pred_vars,
   hyper_params = gbm.grid,
@@ -380,18 +375,33 @@ gbm_results &lt;- get_from_grid(&quot;gbm.tune.grid&quot;, valid.h2o)
 
 # save results
 gbm_mod &lt;- gbm_results$fit.gbm.tuned.h2o
-save(gbm_mod, file = &quot;output/gbm_final_mod.Rdata&quot;)
+save(gbm_mod, file = &quot;output/gbm_final_mod.Rdata&quot;)</code></pre>
+<p> </p>
+</div>
+<div id="random-forest" class="section level2">
+<h2>Random Forest</h2>
+<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla laoreet malesuada purus. Aliquam non odio ut erat lacinia mollis. Ut scelerisque nisi mauris, a convallis ante elementum eget. Maecenas enim nulla, suscipit ac nisl et, varius varius neque. Phasellus non posuere erat, a faucibus tellus. Morbi id consequat lorem. Praesent nec tincidunt lorem. Duis maximus venenatis ipsum, eu pulvinar mi semper et. Curabitur vel dolor nunc. Nunc ornare justo tellus, ut cursus sapien ultricies vitae. Phasellus sapien dolor, ultrices id tortor vitae, blandit ultrices mi. Etiam at magna vitae ipsum consectetur iaculis. Etiam quis felis tortor. Nam tempus convallis pulvinar.</p>
+<p> </p>
+<blockquote class="twitter-tweet" data-lang="en">
+<p lang="en" dir="ltr">
+Random Forest Classification <a href="https://twitter.com/hashtag/machinelearningflashcards?src=hash">#machinelearningflashcards</a> <a href="https://t.co/aLzGWvyAAH">pic.twitter.com/aLzGWvyAAH</a>
+</p>
+— Chris Albon (<span class="citation">@chrisalbon</span>) <a href="https://twitter.com/chrisalbon/status/881961817202843653">July 3, 2017</a>
+</blockquote>
+<script async src="//platform.twitter.com/widgets.js" charset="utf-8"></script>
+<div class="figure">
+<img src="C:/Users/skassel/Desktop/website/predicting-building-inspections/output/plots/machinelearningflashcards_randomForrest.jpg" />
 
-# RANDOM FORREST ----------------------------------------------------------
-
-rf.grid &lt;- list(
+</div>
+<p> </p>
+<pre class="r"><code>rf.grid &lt;- list(
   max_depth = seq(15, 30, 45),
   ntrees = c(10, 25, 50)
 )
 
 # search parameter grid
 rf.tune.grid &lt;- h2o.grid(
-  algorithm = &quot;randomForest&quot;, 
+  algorithm = &quot;randomForest&quot;,
   y = &quot;o.failed.f&quot;,
   x = pred_vars,
   grid = rf.grid,
@@ -408,12 +418,25 @@ rf_results &lt;- get_from_grid(&quot;rf.tune.grid&quot;, valid.h2o)
 
 # save results
 rf_mod &lt;- rf_results$fit.rf.tuned.h2o
-save(rf_mod, file = &quot;output/rf_final_mod.Rdata&quot;)
-
-# ENSEMBLE MODEL ----------------------------------------------------------
-
-# Combine prediction results from each algorithm with original dataset
-results &lt;- valid %&gt;% 
+save(rf_mod, file = &quot;output/rf_final_mod.Rdata&quot;)</code></pre>
+<p> </p>
+</div>
+<div id="variable-importance" class="section level2">
+<h2>Variable Importance</h2>
+<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla laoreet malesuada purus. Aliquam non odio ut erat lacinia mollis. Ut scelerisque nisi mauris, a convallis ante elementum eget. Maecenas enim nulla, suscipit ac nisl et, varius varius neque. Phasellus non posuere erat, a faucibus tellus. Morbi id consequat lorem. Praesent nec tincidunt lorem. Duis maximus venenatis ipsum, eu pulvinar mi semper et. Curabitur vel dolor nunc. Nunc ornare justo tellus, ut cursus sapien ultricies vitae. Phasellus sapien dolor, ultrices id tortor vitae, blandit ultrices mi. Etiam at magna vitae ipsum consectetur iaculis. Etiam quis felis tortor. Nam tempus convallis pulvinar.</p>
+<p> </p>
+<div class="figure">
+<img src="C:/Users/skassel/Desktop/website/predicting-building-inspections/output/plots/fig.x-Variable_importance_plot.png" alt="Fig. 1 - Plotting variable Importance" />
+<p class="caption"><em>Fig. 1 - Plotting variable Importance</em></p>
+</div>
+<p> </p>
+</div>
+<div id="ensemble-multiple-models" class="section level2">
+<h2>Ensemble Multiple Models</h2>
+<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla laoreet malesuada purus. Aliquam non odio ut erat lacinia mollis. Ut scelerisque nisi mauris, a convallis ante elementum eget. Maecenas enim nulla, suscipit ac nisl et, varius varius neque. Phasellus non posuere erat, a faucibus tellus. Morbi id consequat lorem. Praesent nec tincidunt lorem. Duis maximus venenatis ipsum, eu pulvinar mi semper et. Curabitur vel dolor nunc. Nunc ornare justo tellus, ut cursus sapien ultricies vitae. Phasellus sapien dolor, ultrices id tortor vitae, blandit ultrices mi. Etiam at magna vitae ipsum consectetur iaculis. Etiam quis felis tortor. Nam tempus convallis pulvinar.</p>
+<p> </p>
+<pre class="r"><code># Combine prediction results from each algorithm with original dataset
+results &lt;- valid %&gt;%
   cbind(all_glm_results, rf_results$pred.rf, gbm_results$pred.gbm)
 
 # add ensemble predictions/probabilities/correct tage
@@ -421,23 +444,9 @@ results &lt;- results %&gt;%
   mutate(ensemble.predict = ifelse(
     rf.predict + gbm.predict + glm_interaction.p1 &gt; 1, 1, 0)) %&gt;%
   mutate(ensemble.p1 = (glm_interaction.p1 + rf.p1 + gbm.p1) / 3) %&gt;%
-  mutate(ensemble.correct = ifelse(ensemble.predict == o.failed.n, 1, 0))
-
-# report accuracy rates
-for (i in names(results)[grepl(&quot;.correct&quot;, names(results))]) {
-  paste0(
-    gsub(&quot;.correct&quot;, &quot; accuracy rate:  % &quot;, i), 
-    round(mean(results[,i]) * 100, 2)
-  ) %&gt;%
-    print
-}
-
-# save results
-save(results, file = &quot;data/prediction_results.Rdata&quot;)
-
-# H2O ---------------------------------------------------------------------
-
-h2o.shutdown()</code></pre>
+  mutate(ensemble.correct = ifelse(ensemble.predict == o.failed.n, 1, 0))</code></pre>
+<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla laoreet malesuada purus. Aliquam non odio ut erat lacinia mollis. Ut scelerisque nisi mauris, a convallis ante elementum eget. Maecenas enim nulla, suscipit ac nisl et, varius varius neque. Phasellus non posuere erat, a faucibus tellus. Morbi id consequat lorem. Praesent nec tincidunt lorem. Duis maximus venenatis ipsum, eu pulvinar mi semper et. Curabitur vel dolor nunc. Nunc ornare justo tellus, ut cursus sapien ultricies vitae. Phasellus sapien dolor, ultrices id tortor vitae, blandit ultrices mi. Etiam at magna vitae ipsum consectetur iaculis. Etiam quis felis tortor. Nam tempus convallis pulvinar.</p>
+</div>
 
 
 

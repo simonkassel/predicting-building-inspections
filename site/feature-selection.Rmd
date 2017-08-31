@@ -2,23 +2,28 @@
 title: "Feature Selection"
 ---
 
-```{r eval=FALSE}
-# helper functions 
-source("R/helper-functions.R")
+&nbsp;
 
-# source('LNI-analysis-feature-engineering.R')
-load("data/full_dataset_for_modeling.Rdata")
+Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla laoreet malesuada purus. Aliquam non odio ut erat lacinia mollis. Ut scelerisque nisi mauris, a convallis ante elementum eget. Maecenas enim nulla, suscipit ac nisl et, varius varius neque. Phasellus non posuere erat, a faucibus tellus. Morbi id consequat lorem. Praesent nec tincidunt lorem. Duis maximus venenatis ipsum, eu pulvinar mi semper et. Curabitur vel dolor nunc. Nunc ornare justo tellus, ut cursus sapien ultricies vitae. Phasellus sapien dolor, ultrices id tortor vitae, blandit ultrices mi. Etiam at magna vitae ipsum consectetur iaculis. Etiam quis felis tortor. Nam tempus convallis pulvinar.
+
+&nbsp;
+
+## Boruta
+Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla laoreet malesuada purus. Aliquam non odio ut erat lacinia mollis. Ut scelerisque nisi mauris, a convallis ante elementum eget. Maecenas enim nulla, suscipit ac nisl et, varius varius neque. Phasellus non posuere erat, a faucibus tellus. Morbi id consequat lorem. Praesent nec tincidunt lorem. Duis maximus venenatis ipsum, eu pulvinar mi semper et. Curabitur
+
+&nbsp;
+
+![*Fig. 1 - Boruta explained (source: source)*](../output/plots/placeholder.jpg)
+
+&nbsp;
+
+vel dolor nunc. Nunc ornare justo tellus, ut cursus sapien ultricies vitae. Phasellus sapien dolor, ultrices id tortor vitae, blandit ultrices mi. Etiam at magna vitae ipsum consectetur iaculis. Etiam quis felis tortor. Nam tempus convallis pulvinar.
+&nbsp;
+
+```{r eval=FALSE}
 
 # packages
-packages(
-  c(
-    "tidyverse",
-    "caret",
-    "Boruta"
-  )
-)
-
-# boruta ------------------------------------------------------------------
+packages(c("tidyverse", "caret", "Boruta"))
 
 # extract just the predictor variable candidates
 dd <- ds %>%
@@ -37,6 +42,16 @@ fd <- boruta.train$finalDecision
 # generate a list of non-useful variables
 rejected_vars <- fd[which(fd != "Confirmed")] %>% names
 
-# save output
-save(boruta.train.set, rejected_vars, file = "data/boruta.train.Rdata")
 ```
+
+&nbsp;
+
+Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla laoreet malesuada purus. Aliquam non odio ut erat lacinia mollis. Ut scelerisque nisi mauris, a convallis ante elementum eget. Maecenas enim nulla, suscipit ac nisl et, varius varius neque. Phasellus non posuere erat, a faucibus tellus. Morbi id consequat lorem. Praesent nec tincidunt lorem. Duis maximus venenatis ipsum, eu pulvinar mi semper et. Curabitur
+
+&nbsp;
+
+![*Fig. 2 - Feature selection output*](../output/plots/placeholder.jpg)
+
+&nbsp;
+
+vel dolor nunc. Nunc ornare justo tellus, ut cursus sapien ultricies vitae. Phasellus sapien dolor, ultrices id tortor vitae, blandit ultrices mi. Etiam at magna vitae ipsum consectetur iaculis. Etiam quis felis tortor. Nam tempus convallis pulvinar.

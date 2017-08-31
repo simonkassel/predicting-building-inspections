@@ -189,7 +189,7 @@ $(document).ready(function () {
   <a href="model-selection.html">model selection</a>
 </li>
 <li>
-  <a href="feature-selection.html">data visualization</a>
+  <a href="results.html">results</a>
 </li>
 <li>
   <a href="helper-functions.html">helper functions</a>
@@ -208,22 +208,21 @@ $(document).ready(function () {
 </div>
 
 
-<pre class="r"><code># helper functions 
-source(&quot;R/helper-functions.R&quot;)
-
-# source(&#39;LNI-analysis-feature-engineering.R&#39;)
-load(&quot;data/full_dataset_for_modeling.Rdata&quot;)
-
-# packages
-packages(
-  c(
-    &quot;tidyverse&quot;,
-    &quot;caret&quot;,
-    &quot;Boruta&quot;
-  )
-)
-
-# boruta ------------------------------------------------------------------
+<p> </p>
+<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla laoreet malesuada purus. Aliquam non odio ut erat lacinia mollis. Ut scelerisque nisi mauris, a convallis ante elementum eget. Maecenas enim nulla, suscipit ac nisl et, varius varius neque. Phasellus non posuere erat, a faucibus tellus. Morbi id consequat lorem. Praesent nec tincidunt lorem. Duis maximus venenatis ipsum, eu pulvinar mi semper et. Curabitur vel dolor nunc. Nunc ornare justo tellus, ut cursus sapien ultricies vitae. Phasellus sapien dolor, ultrices id tortor vitae, blandit ultrices mi. Etiam at magna vitae ipsum consectetur iaculis. Etiam quis felis tortor. Nam tempus convallis pulvinar.</p>
+<p> </p>
+<div id="boruta" class="section level2">
+<h2>Boruta</h2>
+<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla laoreet malesuada purus. Aliquam non odio ut erat lacinia mollis. Ut scelerisque nisi mauris, a convallis ante elementum eget. Maecenas enim nulla, suscipit ac nisl et, varius varius neque. Phasellus non posuere erat, a faucibus tellus. Morbi id consequat lorem. Praesent nec tincidunt lorem. Duis maximus venenatis ipsum, eu pulvinar mi semper et. Curabitur</p>
+<p> </p>
+<div class="figure">
+<img src="C:/Users/skassel/Desktop/website/predicting-building-inspections/output/plots/placeholder.jpg" alt="Fig. 1 - Boruta explained (source: source)" />
+<p class="caption"><em>Fig. 1 - Boruta explained (source: source)</em></p>
+</div>
+<p> </p>
+<p>vel dolor nunc. Nunc ornare justo tellus, ut cursus sapien ultricies vitae. Phasellus sapien dolor, ultrices id tortor vitae, blandit ultrices mi. Etiam at magna vitae ipsum consectetur iaculis. Etiam quis felis tortor. Nam tempus convallis pulvinar.  </p>
+<pre class="r"><code># packages
+packages(c(&quot;tidyverse&quot;, &quot;caret&quot;, &quot;Boruta&quot;))
 
 # extract just the predictor variable candidates
 dd &lt;- ds %&gt;%
@@ -240,10 +239,17 @@ boruta.train &lt;- Boruta(o.failed ~ ., data = train, doTrace = 2)
 fd &lt;- boruta.train$finalDecision
 
 # generate a list of non-useful variables
-rejected_vars &lt;- fd[which(fd != &quot;Confirmed&quot;)] %&gt;% names
-
-# save output
-save(boruta.train.set, rejected_vars, file = &quot;data/boruta.train.Rdata&quot;)</code></pre>
+rejected_vars &lt;- fd[which(fd != &quot;Confirmed&quot;)] %&gt;% names</code></pre>
+<p> </p>
+<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla laoreet malesuada purus. Aliquam non odio ut erat lacinia mollis. Ut scelerisque nisi mauris, a convallis ante elementum eget. Maecenas enim nulla, suscipit ac nisl et, varius varius neque. Phasellus non posuere erat, a faucibus tellus. Morbi id consequat lorem. Praesent nec tincidunt lorem. Duis maximus venenatis ipsum, eu pulvinar mi semper et. Curabitur</p>
+<p> </p>
+<div class="figure">
+<img src="C:/Users/skassel/Desktop/website/predicting-building-inspections/output/plots/placeholder.jpg" alt="Fig. 2 - Feature selection output" />
+<p class="caption"><em>Fig. 2 - Feature selection output</em></p>
+</div>
+<p> </p>
+<p>vel dolor nunc. Nunc ornare justo tellus, ut cursus sapien ultricies vitae. Phasellus sapien dolor, ultrices id tortor vitae, blandit ultrices mi. Etiam at magna vitae ipsum consectetur iaculis. Etiam quis felis tortor. Nam tempus convallis pulvinar.</p>
+</div>
 
 
 

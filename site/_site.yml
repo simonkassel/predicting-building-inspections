@@ -9,12 +9,12 @@ navbar:
       href: feature-selection.html
     - text: "model selection"
       href: model-selection.html
-    - text: "data visualization"
-      href: feature-selection.html
+    - text: "results"
+      href: results.html
     - text: "helper functions"
       href: helper-functions.html
-    
+
 output:
-  html_document: 
+  html_document:
     theme: simplex
     css: style.css

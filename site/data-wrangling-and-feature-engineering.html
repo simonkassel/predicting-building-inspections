@@ -189,7 +189,7 @@ $(document).ready(function () {
   <a href="model-selection.html">model selection</a>
 </li>
 <li>
-  <a href="feature-selection.html">data visualization</a>
+  <a href="results.html">results</a>
 </li>
 <li>
   <a href="helper-functions.html">helper functions</a>
@@ -208,43 +208,15 @@ $(document).ready(function () {
 </div>
 
 
-<p>Insert text about this section</p>
-<pre class="r"><code>###########################################################################
-## PROJECT: L+I predictive modeling
-##
-## SCRIPT PURPOSE: Feature engineering
-##    - combine violation and inspection datasets
-##    - measure before and after outcomes for each inspections
-##    - engineer features from license and inspection dataset
-##    - create new variables from additional city datasets
-##    - remove unnecessary fields
-##    - export final dataset for model building
-##
-## DATE: 18 July 2017
-## AUTHOR: Simon Kassel
-###########################################################################
-
-# helper functions 
-source(&quot;R/helper-functions.R&quot;)
-
-# packages
-packages(
-  c(&quot;tidyverse&quot;,
-    &quot;data.table&quot;,
-    &quot;sp&quot;,
-    &quot;rgdal&quot;,
-    &quot;lubridate&quot;,
-    &quot;plyr&quot;,
-    &quot;forcats&quot;,
-    &quot;caret&quot;,
-    &quot;spatstat&quot;,
-    &quot;RCurl&quot;,
-    &quot;jsonlite&quot;
-    )
-  )
-
-
-# LOAD AND WRANGLE DATA ---------------------------------------------------
+<p> </p>
+<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla laoreet malesuada purus. Aliquam non odio ut erat lacinia mollis. Ut scelerisque nisi mauris, a convallis ante elementum eget. Maecenas enim nulla, suscipit ac nisl et, varius varius neque. Phasellus non posuere erat, a faucibus tellus. Morbi id consequat lorem. Praesent nec tincidunt lorem. Duis maximus venenatis ipsum, eu pulvinar mi semper et. Curabitur vel dolor nunc. Nunc ornare justo tellus, ut cursus sapien ultricies vitae. Phasellus sapien dolor, ultrices id tortor vitae, blandit ultrices mi. Etiam at magna vitae ipsum consectetur iaculis. Etiam quis felis tortor. Nam tempus convallis pulvinar.</p>
+<p> </p>
+<div id="load-and-wrangle-data" class="section level2">
+<h2>Load and wrangle data</h2>
+<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla laoreet malesuada purus. Aliquam non odio ut erat lacinia mollis. Ut scelerisque nisi mauris, a convallis ante elementum eget. Maecenas enim nulla, suscipit ac nisl et, varius varius neque. Phasellus non posuere erat, a faucibus tellus. Morbi id consequat lorem. Praesent nec tincidunt lorem. Duis maximus venenatis ipsum, eu pulvinar mi semper et. Curabitur vel dolor nunc. Nunc ornare justo tellus, ut cursus sapien ultricies vitae. Phasellus sapien dolor, ultrices id tortor vitae, blandit ultrices mi. Etiam at magna vitae ipsum consectetur iaculis. Etiam quis felis tortor. Nam tempus convallis pulvinar.  </p>
+<pre class="r"><code># packages
+packages(c(&quot;tidyverse&quot;, &quot;data.table&quot;, &quot;sp&quot;, &quot;rgdal&quot;, &quot;lubridate&quot;, &quot;plyr&quot;,
+  &quot;forcats&quot;, &quot;caret&quot;, &quot;spatstat&quot;, &quot;RCurl&quot;, &quot;jsonlite&quot;))
 
 # load spatial datasets
 load(&quot;data/lni_data.Rdata&quot;)
@@ -265,13 +237,9 @@ full_dat &lt;- cleanData(full_dat)
 filtered_dat &lt;- filterData(full_dat)
 
 # associate each inspection with other inspections in its case
-#   measure outcomes of the same case before and after the inspection 
+#   measure outcomes of the same case before and after the inspection
 #     in question
 filtered_dat &lt;- measureAllFails(filtered_dat)
-
-# REMOVE
-# to obtain this dataset dataset:
-load(&quot;output/data/lni_15to17_withRecent_2017-07-18.Rdata&quot;)
 
 # remove the initial inspection instances
 df &lt;- filtered_dat %&gt;%
@@ -279,60 +247,87 @@ df &lt;- filtered_dat %&gt;%
   filter(as.Date(violDte) &lt; as.Date(inspCompl)) %&gt;%
   data.table() %&gt;%
   .[, c(&quot;organizati&quot;, &quot;unit&quot;, &quot;apdesc&quot;, &quot;aptype&quot;) := NULL] %&gt;%
-  na.omit()
-
-
-# FEATURE ENGINEERING -----------------------------------------------------
-
-# create additional variables
+  na.omit()</code></pre>
+<p> </p>
+<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla laoreet malesuada purus. Aliquam non odio ut erat lacinia mollis. Ut scelerisque nisi mauris, a convallis ante elementum eget. Maecenas enim nulla, suscipit ac nisl et, varius varius neque. Phasellus non posuere erat, a faucibus tellus. Morbi id consequat lorem. Praesent nec tincidunt lorem.</p>
+<p> </p>
+<div class="figure">
+<img src="C:/Users/skassel/Desktop/website/predicting-building-inspections/output/plots/placeholder.jpg" alt="Fig. 1 - Measuring inspection outcomes over the lifetime of a case" />
+<p class="caption"><em>Fig. 1 - Measuring inspection outcomes over the lifetime of a case</em></p>
+</div>
+<p> </p>
+<p>Duis maximus venenatis ipsum, eu pulvinar mi semper et. Curabitur vel dolor nunc. Nunc ornare justo tellus, ut cursus sapien ultricies vitae. Phasellus sapien dolor, ultrices id tortor vitae, blandit ultrices mi. Etiam at magna vitae ipsum consectetur iaculis. Etiam quis felis tortor. Nam tempus convallis pulvinar.</p>
+<p> </p>
+</div>
+<div id="feature-engineering" class="section level2">
+<h2>Feature Engineering</h2>
+<pre class="r"><code># create additional variables
 df$zipShort &lt;- substr(df$zip, 1, 5) %&gt;% as.factor()
 df$failed &lt;- ifelse(df$inspStatus == &quot;Failed&quot;, 1, 0)
 df$before &lt;- as.factor(df$before)
 
 # add 3 variables indicating durations from previous events in lifecycle of
 #   building case
-df &lt;- durationVars(df)
-
-# extract &#39;violation type&#39; variable and remove levels ocurring &lt; 0.02% 
+df &lt;- durationVars(df)</code></pre>
+<p> </p>
+<p>Duis maximus venenatis ipsum, eu pulvinar mi semper et. Curabitur vel dolor nunc. Nunc ornare justo tellus, ut cursus sapien ultricies vitae. Phasellus sapien dolor, ultrices id tortor vitae, blandit ultrices mi. Etiam at magna vitae ipsum consectetur iaculis. Etiam quis felis tortor. Nam tempus convallis pulvinar.</p>
+<p> </p>
+<div class="figure">
+<img src="C:/Users/skassel/Desktop/website/predicting-building-inspections/output/plots/fig.x-Joy_plots.png" alt="Fig. 2 - Time variables" />
+<p class="caption"><em>Fig. 2 - Time variables</em></p>
+</div>
+<p> </p>
+<pre class="r"><code># extract &#39;violation type&#39; variable and remove levels occurring &lt; 0.02%
 #   of the time
 df_violTpe  &lt;- df %&gt;%
   select(apinspkey, violDesc) %&gt;%
   mutate(violTpe = fct_lump(violDesc, p = 0.02)) %&gt;%
   dplyr::rename(id.apinspkey = apinspkey)
 
-# generate a lookup table to get the names of violation types (for later 
+# generate a lookup table to get the names of violation types (for later
 #   use)
 violType_lookup &lt;- getFactorLevelLookup(df_violTpe$violTpe, &quot;violTpe&quot;)
 
 # encode violation-type categorical feature as a series of binary
 #   numeric dummy variables
-df_violTpe &lt;- castAndSumm(df_violTpe, &quot;id.apinspkey&quot;, &quot;violTpe&quot;, binary = FALSE)
-
-
-# SUMMARISE TO THE INSPECTION LEVEL ---------------------------------------
-
-# collapse dataset to the inspection level, summarising 
-ds &lt;- summariseInspections(df)
-
-# measure for spatial autocorrelation among repeat violators
+df_violTpe &lt;- castAndSumm(df_violTpe, &quot;id.apinspkey&quot;, &quot;violTpe&quot;, binary = FALSE)</code></pre>
+<p> </p>
+<div class="figure">
+<img src="C:/Users/skassel/Desktop/website/predicting-building-inspections/output/plots/fig.x-Levels-of-data-bar-charts.png" alt="Fig. 3 - Levels of L&amp;I data" />
+<p class="caption"><em>Fig. 3 - Levels of L&amp;I data</em></p>
+</div>
+<p> </p>
+<pre class="r"><code># collapse dataset to the inspection level, summarizing
+ds &lt;- summariseInspections(df)</code></pre>
+<p> </p>
+<p>Duis maximus venenatis ipsum, eu pulvinar mi semper et. Curabitur vel dolor nunc. Nunc ornare justo tellus, ut cursus sapien ultricies vitae. Phasellus sapien dolor, ultrices id tortor vitae, blandit ultrices mi. Etiam at magna vitae ipsum consectetur iaculis. Etiam quis felis tortor. Nam tempus convallis pulvinar.</p>
+<p> </p>
+<div class="figure">
+<img src="C:/Users/skassel/Desktop/website/predicting-building-inspections/output/plots/fig.x-Map_of_fails_and_passes.png" alt="Fig. 4 - Mapping the response variable" />
+<p class="caption"><em>Fig. 4 - Mapping the response variable</em></p>
+</div>
+<p> </p>
+<pre class="r"><code># measure for spatial autocorrelation among repeat violators
 ds &lt;- endogMain(ds, nlist = c(5, 10))
 
 # remove infrequently occuring categorical variables
 ds$f.inspDesc &lt;- fct_lump(ds$f.inspDesc, prop = 0.02)
 ds$f.recStatus &lt;- fct_lump(ds$f.recStatus, prop = 0.02)
 
-# miscellenous feature engineering
+# miscellaneous feature engineering
 ds &lt;- ds %&gt;%
   mutate(f.numFailTypes = as.factor(squishToRange(e.numFailTypes))) %&gt;%
   mutate(f.numViol = as.factor(squishToRange(e.numViol))) %&gt;%
   mutate(f.prevFail = as.factor(squishToRange(e.prevFail))) %&gt;%
   select(-e.numFailTypes, -e.numViol, -e.prevFail) %&gt;%
-  filter(is.finite(e.avgDists.repOfAll.n5))
-
-
-# EXTERNAL DATA SOURCES ---------------------------------------------------
-
-# vacant property indicators
+  filter(is.finite(e.avgDists.repOfAll.n5))</code></pre>
+<p> </p>
+</div>
+<div id="external-data-sources" class="section level2">
+<h2>External Data Sources</h2>
+<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla laoreet malesuada purus. Aliquam non odio ut erat lacinia mollis. Ut scelerisque nisi mauris, a convallis ante elementum eget. Maecenas enim nulla, suscipit ac nisl et, varius varius neque. Phasellus non posuere erat, a faucibus tellus. Morbi id consequat lorem. Praesent nec tincidunt lorem. Duis maximus venenatis ipsum, eu pulvinar mi semper et. Curabitur vel dolor nunc. Nunc ornare justo tellus, ut cursus sapien ultricies vitae. Phasellus sapien dolor, ultrices id tortor vitae, blandit ultrices mi. Etiam at magna vitae ipsum consectetur iaculis. Etiam quis felis tortor. Nam tempus convallis pulvinar.</p>
+<p> </p>
+<pre class="r"><code># vacant property indicators
 # read dataset
 vpi &lt;- read.csv(&quot;http://data.phl.opendata.arcgis.com/datasets/f7ed68293c5\
                 e40d58f1de9c8435c3e84_0.csv&quot;, stringsAsFactors = TRUE)
@@ -376,20 +371,26 @@ ds.temp &lt;- ds %&gt;%
   mutate(f.ownerDelinquent = as.factor(ifelse(s.ownerTaxBalance &gt; 5, 1, 0)))
 
 # and bind it to the master dataset
-ds &lt;- cbind(ds, ds.temp)
-
-
-
-# ONE-HOT ENCODE CATEGORICAL VARIABLES ------------------------------------
-
-# get list of factor variable names
+ds &lt;- cbind(ds, ds.temp)</code></pre>
+<p> </p>
+</div>
+<div id="dealing-with-categorical-variables" class="section level2">
+<h2>Dealing with categorical variables</h2>
+<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla laoreet malesuada purus. Aliquam non odio ut erat lacinia mollis. Ut scelerisque nisi mauris, a convallis ante elementum eget. Maecenas enim nulla, suscipit ac nisl et, varius varius neque. Phasellus non posuere erat, a faucibus tellus. Morbi id consequat lorem. Praesent nec tincidunt lorem. Duis maximus venenatis ipsum, eu pulvinar mi semper et. Curabitur vel dolor nunc. Nunc ornare justo tellus, ut cursus sapien ultricies vitae. Phasellus sapien dolor, ultrices id tortor vitae, blandit ultrices mi. Etiam at magna vitae ipsum consectetur iaculis. Etiam quis felis tortor. Nam tempus convallis pulvinar.</p>
+<p> </p>
+<div class="figure">
+<img src="C:/Users/skassel/Desktop/website/predicting-building-inspections/output/plots/placeholder.jpg" alt="Fig. 4 - One hot encoding (Source: source)" />
+<p class="caption"><em>Fig. 4 - One hot encoding (Source: source)</em></p>
+</div>
+<p> </p>
+<pre class="r"><code># get list of factor variable names
 names &lt;- ds %&gt;%
   select(starts_with(&quot;f.&quot;)) %&gt;%
   names %&gt;%
   as.list
 
 # encode each of these as  a series of binary dummy variables
-factor_variable_list &lt;- llply(names, castFactorVars, dat = ds, 
+factor_variable_list &lt;- llply(names, castFactorVars, dat = ds,
                               .progress = &quot;text&quot;)
 
 # join all categorical data variable dfs together
@@ -411,25 +412,10 @@ mod_vars &lt;- ds %&gt;% select(
   -o.numFails, -starts_with(&quot;i.&quot;),
   -starts_with(&quot;l.&quot;), -starts_with(&quot;f.&quot;)) %&gt;%
   names
-non_mod_vars &lt;- setdiff(names(ds), mod_vars)
-
-
-# FACTOR LOOK-UP TABLES ---------------------------------------------------
-
-# create a series of reference variable lookup tables for later use
-lookup &lt;- rbind(
-  violType_lookup,
-  getFactorLevelLookup(ds$f.inspDesc, &quot;inspDesc&quot;),
-  getFactorLevelLookup(ds$f.recStatus, &quot;recStatus&quot;),
-  getFactorLevelLookup(ds$f.priorityde, &quot;priorityde&quot;)
-)
-
-
-# SAVE --------------------------------------------------------------------
-
-# save objects for use in following scripts
-save(ds, mod_vars, non_mod_vars, lookup, file = &quot;data/full_dataset_for_modeling.Rdata&quot;)
-save(df, file = &quot;data/failure_level_dataset.Rdata&quot;)</code></pre>
+non_mod_vars &lt;- setdiff(names(ds), mod_vars)</code></pre>
+<p> </p>
+<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla laoreet malesuada purus. Aliquam non odio ut erat lacinia mollis. Ut scelerisque nisi mauris, a convallis ante elementum eget. Maecenas enim nulla, suscipit ac nisl et, varius varius neque. Phasellus non posuere erat, a faucibus tellus. Morbi id consequat lorem. Praesent nec tincidunt lorem. Duis maximus venenatis ipsum, eu pulvinar mi semper et. Curabitur vel dolor nunc. Nunc ornare justo tellus, ut cursus sapien ultricies vitae. Phasellus sapien dolor, ultrices id tortor vitae, blandit ultrices mi. Etiam at magna vitae ipsum consectetur iaculis. Etiam quis felis tortor. Nam tempus convallis pulvinar.</p>
+</div>
 
 
 

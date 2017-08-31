@@ -1,42 +1,46 @@
 ---
-title: "Data Wrangling and Feature Engineering"
+title: "Model Selection"
 ---
 
-Insert text about this section
+&nbsp;
 
-```{r eval=FALSE}
-# helper functions 
-source("R/helper-functions.R")
+Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla laoreet malesuada purus. Aliquam non odio ut erat lacinia mollis. Ut scelerisque nisi mauris, a convallis ante elementum eget. Maecenas enim nulla, suscipit ac nisl et, varius varius neque. Phasellus non posuere erat, a faucibus tellus. Morbi id consequat lorem. Praesent nec tincidunt lorem. Duis maximus venenatis ipsum, eu pulvinar mi semper et. Curabitur vel dolor nunc. Nunc ornare justo tellus, ut cursus sapien ultricies vitae. Phasellus sapien dolor, ultrices id tortor vitae, blandit ultrices mi. Etiam at magna vitae ipsum consectetur iaculis. Etiam quis felis tortor. Nam tempus convallis pulvinar.
 
-# source('R/data-wrangling-and-feature-engineering.R')
+&nbsp;
+
+## Load and wrangle data
+Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla laoreet malesuada purus. Aliquam non odio ut erat lacinia mollis. Ut scelerisque nisi mauris, a convallis ante elementum eget. Maecenas enim nulla, suscipit ac nisl et, varius varius neque. Phasellus non posuere erat, a faucibus tellus. Morbi id consequat lorem. Praesent nec tincidunt lorem. Duis maximus venenatis ipsum, eu pulvinar mi semper et. Curabitur
+vel dolor nunc. Nunc ornare justo tellus, ut cursus sapien ultricies vitae. Phasellus sapien dolor, ultrices id tortor vitae, blandit ultrices mi. Etiam at magna vitae ipsum consectetur iaculis. Etiam quis felis tortor. Nam tempus convallis pulvinar.
+
+&nbsp;
+
+```{r eval=FALSE, echo=FALSE}
+# source('R/data-wrangling-and-feature-engineering')
 load("data/full_dataset_for_modeling.Rdata")
-
-# source('R/feature-selection.R')
-load("data/boruta.train.Rdata")
+```
+```{r eval=FALSE}
 
 # packages
-packages(
-  c(
-    "tidyverse",
-    "data.table",
-    "sp",
-    "caret",
-    "plyr",
-    "pROC",
-    "statmod",
-    "h2o",
-    "Boruta"
-  )
-)
+packages(c("tidyverse", "data.table", "sp", "caret", "plyr", "pROC", "statmod",
+           "h2o", "Boruta"))
 
 # baseline accuracy
-max(table(ds$o.failed.n)) / nrow(ds)
-# 0.57223
+print("Baseline Accuracy: ")
+round(max(table(ds$o.failed.n)) / nrow(ds), 2)
 
-# SUBSET DATA -------------------------------------------------------------
+```
+
+&nbsp;
+
+vel dolor nunc. Nunc ornare justo tellus, ut cursus sapien ultricies vitae.
+
+&nbsp;
+
+## Partition Dataset
+```{r eval=FALSE}
 
 # remove rejected vars
-d <- ds %>% 
+d <- ds %>%
   select(-one_of(rejected_vars))
 
 # partition dataset
@@ -48,8 +52,15 @@ valid <- d[-inTrain, ]
 # list of predictor variables
 pred_vars <- setdiff(names(d), c(non_mod_vars, "o.failed.n", "o.failed.f"))
 
+```
 
-# H2O ---------------------------------------------------------------------
+## H2O
+Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla laoreet malesuada purus. Aliquam non odio ut erat lacinia mollis. Ut scelerisque nisi mauris, a convallis ante elementum eget. Maecenas enim nulla, suscipit ac nisl et, varius varius neque. Phasellus non posuere erat, a faucibus tellus. Morbi id consequat lorem. Praesent nec tincidunt lorem. Duis maximus venenatis ipsum, eu pulvinar mi semper et. Curabitur
+vel dolor nunc. Nunc ornare justo tellus, ut cursus sapien ultricies vitae. Phasellus sapien dolor, ultrices id tortor vitae, blandit ultrices mi. Etiam at magna vitae ipsum consectetur iaculis. Etiam quis felis tortor. Nam tempus convallis pulvinar.
+
+&nbsp;
+
+```{r eval=FALSE}
 
 # initialize h2o cluster
 localhost <- h2o.init(nthreads = -1, max_mem_size = "8G")
@@ -65,13 +76,23 @@ valid.h2o <- as.h2o(valid)
 
 # define parameter search criteria grid
 search.criteria <- list(
-  strategy = "RandomDiscrete", 
+  strategy = "RandomDiscrete",
   max_runtime_secs = 900,
-  stopping_rounds = 5, 
+  stopping_rounds = 5,
   stopping_metric = "AUTO"
 )
 
-# GLM ---------------------------------------------------------------------
+```
+
+&nbsp;
+
+## Logistic Regression
+Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla laoreet malesuada purus. Aliquam non odio ut erat lacinia mollis. Ut scelerisque nisi mauris, a convallis ante elementum eget. Maecenas enim nulla, suscipit ac nisl et, varius varius neque. Phasellus non posuere erat, a faucibus tellus. Morbi id consequat lorem. Praesent nec tincidunt lorem. Duis maximus venenatis ipsum, eu pulvinar mi semper et. Curabitur
+vel dolor nunc. Nunc ornare justo tellus, ut cursus sapien ultricies vitae. Phasellus sapien dolor, ultrices id tortor vitae, blandit ultrices mi. Etiam at magna vitae ipsum consectetur iaculis. Etiam quis felis tortor. Nam tempus convallis pulvinar.
+
+&nbsp;
+
+```{r eval=FALSE}
 
 # subset variables into different categories
 fact_vars <- getVarNames(names(train.h2o), "f.")
@@ -86,15 +107,15 @@ alphas <- seq(0, 1, 0.1)
 
 # Parameter tuning:
 glm.tune.grid <- h2o.grid(
-  algorithm = "glm", 
+  algorithm = "glm",
   hyper_params = list(alpha = alphas),
-  y = "o.failed.f", 
+  y = "o.failed.f",
   x = glm_pred_vars,
   grid_id = "glm.tune.grid",
   training_frame = train.h2o,
   nfolds = 10,
   lambda_search = TRUE,
-  family = "binomial", 
+  family = "binomial",
   standardize = TRUE
 )
 
@@ -105,8 +126,17 @@ glm_results <- get_from_grid("glm.tune.grid", valid.h2o)
 glm_mod <- glm_results$fit.glm.tuned.h2o
 save(glm_mod, file = "output/glm_final_mod.Rdata")
 
+```
 
-# GLM INTERACTION MODEL ---------------------------------------------------
+&nbsp;
+
+## Logistic Regression with interaction
+Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla laoreet malesuada purus. Aliquam non odio ut erat lacinia mollis. Ut scelerisque nisi mauris, a convallis ante elementum eget. Maecenas enim nulla, suscipit ac nisl et, varius varius neque. Phasellus non posuere erat, a faucibus tellus. Morbi id consequat lorem. Praesent nec tincidunt lorem. Duis maximus venenatis ipsum, eu pulvinar mi semper et. Curabitur
+vel dolor nunc. Nunc ornare justo tellus, ut cursus sapien ultricies vitae. Phasellus sapien dolor, ultrices id tortor vitae, blandit ultrices mi. Etiam at magna vitae ipsum consectetur iaculis. Etiam quis felis tortor. Nam tempus convallis pulvinar.
+
+&nbsp;
+
+```{r eval=FALSE}
 
 # get interaction variables for train/test sets
 pairwise <- getInteractionVars(train.h2o, realf, bind = FALSE)
@@ -149,16 +179,16 @@ all_glm_results <- llply(all_glm_mods, getPredictions, validation_frame = int_va
 # Tuned parameters:
 # define hyperparameter grid
 gbm.grid <- list(
-  learn_rate = seq(.03,.05,.01), 
+  learn_rate = seq(.03,.05,.01),
   max_depth = c(8:10),
-  sample_rate = seq(0.7, 1.0, 0.1), 
+  sample_rate = seq(0.7, 1.0, 0.1),
   col_sample_rate = seq(0.4, 1.0, 0.1)
 )
 
 # search parameter grid
 gbm.tune.grid <- h2o.grid(
-  algorithm = "gbm", 
-  grid_id = "gbm.tune.grid", 
+  algorithm = "gbm",
+  grid_id = "gbm.tune.grid",
   y = "o.failed.f",
   x = pred_vars,
   hyper_params = gbm.grid,
@@ -178,7 +208,23 @@ gbm_results <- get_from_grid("gbm.tune.grid", valid.h2o)
 gbm_mod <- gbm_results$fit.gbm.tuned.h2o
 save(gbm_mod, file = "output/gbm_final_mod.Rdata")
 
-# RANDOM FORREST ----------------------------------------------------------
+```
+
+&nbsp;
+
+##Random Forest
+Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla laoreet malesuada purus. Aliquam non odio ut erat lacinia mollis. Ut scelerisque nisi mauris, a convallis ante elementum eget. Maecenas enim nulla, suscipit ac nisl et, varius varius neque. Phasellus non posuere erat, a faucibus tellus. Morbi id consequat lorem. Praesent nec tincidunt lorem. Duis maximus venenatis ipsum, eu pulvinar mi semper et. Curabitur
+vel dolor nunc. Nunc ornare justo tellus, ut cursus sapien ultricies vitae. Phasellus sapien dolor, ultrices id tortor vitae, blandit ultrices mi. Etiam at magna vitae ipsum consectetur iaculis. Etiam quis felis tortor. Nam tempus convallis pulvinar.
+
+&nbsp;
+
+<blockquote class="twitter-tweet" data-lang="en"><p lang="en" dir="ltr">Random Forest Classification <a href="https://twitter.com/hashtag/machinelearningflashcards?src=hash">#machinelearningflashcards</a> <a href="https://t.co/aLzGWvyAAH">pic.twitter.com/aLzGWvyAAH</a></p>&mdash; Chris Albon (@chrisalbon) <a href="https://twitter.com/chrisalbon/status/881961817202843653">July 3, 2017</a></blockquote>
+<script async src="//platform.twitter.com/widgets.js" charset="utf-8"></script>
+![](../output/plots/machinelearningflashcards_randomForrest.jpg)
+
+&nbsp;
+
+```{r eval=FALSE}
 
 rf.grid <- list(
   max_depth = seq(15, 30, 45),
@@ -187,7 +233,7 @@ rf.grid <- list(
 
 # search parameter grid
 rf.tune.grid <- h2o.grid(
-  algorithm = "randomForest", 
+  algorithm = "randomForest",
   y = "o.failed.f",
   x = pred_vars,
   grid = rf.grid,
@@ -206,10 +252,30 @@ rf_results <- get_from_grid("rf.tune.grid", valid.h2o)
 rf_mod <- rf_results$fit.rf.tuned.h2o
 save(rf_mod, file = "output/rf_final_mod.Rdata")
 
-# ENSEMBLE MODEL ----------------------------------------------------------
+```
+
+&nbsp;
+
+##Variable Importance
+Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla laoreet malesuada purus. Aliquam non odio ut erat lacinia mollis. Ut scelerisque nisi mauris, a convallis ante elementum eget. Maecenas enim nulla, suscipit ac nisl et, varius varius neque. Phasellus non posuere erat, a faucibus tellus. Morbi id consequat lorem. Praesent nec tincidunt lorem. Duis maximus venenatis ipsum, eu pulvinar mi semper et. Curabitur
+vel dolor nunc. Nunc ornare justo tellus, ut cursus sapien ultricies vitae. Phasellus sapien dolor, ultrices id tortor vitae, blandit ultrices mi. Etiam at magna vitae ipsum consectetur iaculis. Etiam quis felis tortor. Nam tempus convallis pulvinar.
+
+&nbsp;
+
+![*Fig. 1 - Plotting variable Importance*](../output/plots/fig.x-Variable_importance_plot.png)
+
+&nbsp;
+
+##Ensemble Multiple Models
+Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla laoreet malesuada purus. Aliquam non odio ut erat lacinia mollis. Ut scelerisque nisi mauris, a convallis ante elementum eget. Maecenas enim nulla, suscipit ac nisl et, varius varius neque. Phasellus non posuere erat, a faucibus tellus. Morbi id consequat lorem. Praesent nec tincidunt lorem. Duis maximus venenatis ipsum, eu pulvinar mi semper et. Curabitur
+vel dolor nunc. Nunc ornare justo tellus, ut cursus sapien ultricies vitae. Phasellus sapien dolor, ultrices id tortor vitae, blandit ultrices mi. Etiam at magna vitae ipsum consectetur iaculis. Etiam quis felis tortor. Nam tempus convallis pulvinar.
+
+&nbsp;
+
+```{r eval=FALSE}
 
 # Combine prediction results from each algorithm with original dataset
-results <- valid %>% 
+results <- valid %>%
   cbind(all_glm_results, rf_results$pred.rf, gbm_results$pred.gbm)
 
 # add ensemble predictions/probabilities/correct tage
@@ -219,19 +285,7 @@ results <- results %>%
   mutate(ensemble.p1 = (glm_interaction.p1 + rf.p1 + gbm.p1) / 3) %>%
   mutate(ensemble.correct = ifelse(ensemble.predict == o.failed.n, 1, 0))
 
-# report accuracy rates
-for (i in names(results)[grepl(".correct", names(results))]) {
-  paste0(
-    gsub(".correct", " accuracy rate:  % ", i), 
-    round(mean(results[,i]) * 100, 2)
-  ) %>%
-    print
-}
-
-# save results
-save(results, file = "data/prediction_results.Rdata")
-
-# H2O ---------------------------------------------------------------------
-
-h2o.shutdown()
 ```
+
+Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla laoreet malesuada purus. Aliquam non odio ut erat lacinia mollis. Ut scelerisque nisi mauris, a convallis ante elementum eget. Maecenas enim nulla, suscipit ac nisl et, varius varius neque. Phasellus non posuere erat, a faucibus tellus. Morbi id consequat lorem. Praesent nec tincidunt lorem. Duis maximus venenatis ipsum, eu pulvinar mi semper et. Curabitur
+vel dolor nunc. Nunc ornare justo tellus, ut cursus sapien ultricies vitae. Phasellus sapien dolor, ultrices id tortor vitae, blandit ultrices mi. Etiam at magna vitae ipsum consectetur iaculis. Etiam quis felis tortor. Nam tempus convallis pulvinar.
