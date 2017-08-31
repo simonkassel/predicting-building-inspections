@@ -3,6 +3,8 @@ output_dir: "."
 navbar:
   title: "predicting building inspections"
   right:
+    - text: "home"
+      href: index.html
     - text: "data wrangling + feature engineering"
       href: data-wrangling-and-feature-engineering.html
     - text: "feature selection"
