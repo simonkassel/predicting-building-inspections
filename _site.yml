@@ -1,9 +1,0 @@
-name: "predicting-building-inspections"
-output_dir: "."
-navbar:
-  title: "Predicting Building Inspections"
-  left:
-    - text: "Home"
-      href: index.html
-    - text: "About Me"
-      href: about.html
