@@ -32,3 +32,18 @@ img {
   margin-left: 40px;
   margin-right: 40px;
 }
+
+img.logo {
+  width: 50%;
+  margin-top: 40px;
+  margin-bottom: 60px;
+  display: block;
+}
+
+.title-page-title {
+  color: #0000000;
+}
+
+hr {
+  color: #126075;
+}

@@ -210,7 +210,7 @@ $(document).ready(function () {
 <h2>Boruta</h2>
 <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla laoreet malesuada purus. Aliquam non odio ut erat lacinia mollis. Ut scelerisque nisi mauris, a convallis ante elementum eget. Maecenas enim nulla, suscipit ac nisl et, varius varius neque.</p>
 <div class="figure">
-<img src="images/placeholder.jpg" />
+<img src="plots/fig.x-Variable_importance_plot.svg" />
 
 </div>
 <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla laoreet malesuada purus. Aliquam non odio ut erat lacinia mollis. Ut scelerisque nisi mauris, a convallis ante elementum eget. Maecenas enim nulla, suscipit ac nisl et, varius varius neque.</p>
@@ -234,10 +234,43 @@ fd &lt;- boruta.train$finalDecision
 # generate a list of non-useful variables
 rejected_vars &lt;- fd[which(fd != &quot;Confirmed&quot;)] %&gt;% names</code></pre>
 <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla laoreet malesuada purus. Aliquam non odio ut erat lacinia mollis. Ut scelerisque nisi mauris, a convallis ante elementum eget. Maecenas enim nulla, suscipit ac nisl et, varius varius neque.</p>
-<div class="figure">
-<img src="images/placeholder.jpg" />
-
-</div>
+<pre class="r"><code>print(rejected_vars)</code></pre>
+<pre><code>##  [1] &quot;e.avgDists.repOfAll.n10&quot; &quot;bere.4&quot;                 
+##  [3] &quot;bere.5&quot;                  &quot;bere.6&quot;                 
+##  [5] &quot;bere.7&quot;                  &quot;priorityde.1&quot;           
+##  [7] &quot;recStatus.3&quot;             &quot;numFailTypes.4&quot;         
+##  [9] &quot;numFailTypes.5&quot;          &quot;numViol.3&quot;              
+## [11] &quot;numViol.4&quot;               &quot;numViol.5&quot;              
+## [13] &quot;prevFail.5&quot;              &quot;prevFail.6&quot;</code></pre>
+<p>and the variables that were accepted:</p>
+<pre><code>##  [1] &quot;o.failed.n&quot;             &quot;s.sinceLastInsp&quot;       
+##  [3] &quot;s.sinceViolation&quot;       &quot;s.sinceAdded&quot;          
+##  [5] &quot;e.avgDists.all.n5&quot;      &quot;e.avgDists.nr.n5&quot;      
+##  [7] &quot;e.avgDists.rep.n5&quot;      &quot;e.avgDists.repOfAll.n5&quot;
+##  [9] &quot;e.avgDists.all.n10&quot;     &quot;e.avgDists.nr.n10&quot;     
+## [11] &quot;e.avgDists.rep.n10&quot;     &quot;s.ownerTaxBalance&quot;     
+## [13] &quot;bere.1&quot;                 &quot;bere.2&quot;                
+## [15] &quot;bere.3&quot;                 &quot;priorityde.2&quot;          
+## [17] &quot;priorityde.3&quot;           &quot;priorityde.4&quot;          
+## [19] &quot;priorityde.5&quot;           &quot;priorityde.6&quot;          
+## [21] &quot;recStatus.1&quot;            &quot;recStatus.2&quot;           
+## [23] &quot;inspDesc.1&quot;             &quot;inspDesc.2&quot;            
+## [25] &quot;inspDesc.3&quot;             &quot;inspDesc.4&quot;            
+## [27] &quot;inspDesc.5&quot;             &quot;inspDesc.6&quot;            
+## [29] &quot;inspDesc.7&quot;             &quot;vpi.isBldgAddkey.1&quot;    
+## [31] &quot;vpi.isBldgAddkey.2&quot;     &quot;vpi.isOwner.1&quot;         
+## [33] &quot;vpi.isOwner.2&quot;          &quot;ownerDelinquent.1&quot;     
+## [35] &quot;ownerDelinquent.2&quot;      &quot;numFailTypes.1&quot;        
+## [37] &quot;numFailTypes.2&quot;         &quot;numFailTypes.3&quot;        
+## [39] &quot;numFailTypes.6&quot;         &quot;numViol.1&quot;             
+## [41] &quot;numViol.2&quot;              &quot;numViol.6&quot;             
+## [43] &quot;prevFail.1&quot;             &quot;prevFail.2&quot;            
+## [45] &quot;prevFail.3&quot;             &quot;prevFail.4&quot;            
+## [47] &quot;prevFail.7&quot;             &quot;violTpe.1&quot;             
+## [49] &quot;violTpe.2&quot;              &quot;violTpe.3&quot;             
+## [51] &quot;violTpe.4&quot;              &quot;violTpe.5&quot;             
+## [53] &quot;violTpe.6&quot;              &quot;violTpe.7&quot;             
+## [55] &quot;violTpe.8&quot;</code></pre>
 <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla laoreet malesuada purus. Aliquam non odio ut erat lacinia mollis. Ut scelerisque nisi mauris, a convallis ante elementum eget. Maecenas enim nulla, suscipit ac nisl et, varius varius neque.</p>
 </div>
 

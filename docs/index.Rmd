@@ -1,7 +1,7 @@
----
-title: "Predicting Building Inspections"
----
+<img class="logo" src="images/2015_03_31_DataAnalytics_Logo.svg">
 
-This is a project of the Data Analytics team at Azavea.
-
-[results](results.html)
+<div class="title-page-title">
+#Predicting Building Code Compliance
+#with Machine Learning Models
+<div>
+______

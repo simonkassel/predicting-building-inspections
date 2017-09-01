@@ -26,6 +26,9 @@ load("data/prediction_results.Rdata")
 load("data/failure_level_dataset.Rdata")
 #   Variable labels
 var_names <- read.csv("data/variable_names.csv")
+load("output/data/gbm_final_mod.Rdata")
+load("output/data/rf_final_mod.Rdata")
+load("output/data/glm_final_mod.Rdata")
 
 # packages
 packages(
@@ -37,7 +40,8 @@ packages(
     "plotROC",
     "ggpubr",
     "pROC",
-    "waffle"
+    "waffle",
+    "svglite"
     )
 )
 
@@ -81,7 +85,7 @@ ggplot(data_levels_bar) +
     legend.position = "none", 
     axis.title = element_blank()) 
 
-ggsave("output/plots/fig.x-Levels-of-data-bar-charts.png", device = "png")
+ggsave("output/plots/fig.x-Levels-of-data-bar-charts.svg", device = "svg")
 
 
 # LOOK AT THE CASE LEVEL --------------------------------------------------
@@ -134,7 +138,7 @@ ggplot(grids) +
   plotTheme(title_color = 5, map = TRUE, text_color = 5) +
   theme(axis.text = element_blank())
   
-ggsave("output/plots/fig.x-Map_of_fails_and_passes.png", device = "png")
+ggsave("output/plots/fig.x-Map_of_fails_and_passes.svg", device = "svg")
 
 
 # GGJOY CONTINUOS VARS ----------------------------------------------------
@@ -175,17 +179,17 @@ ggplot(joy, aes(x = value, y = var)) +
   scale_y_discrete(labels = c("since\nviolation" ,"since last\ninspection")) + 
   theme(axis.title.y = element_blank())
 
-ggsave("output/plots/fig.x-Joy_plots.png")
+ggsave("output/plots/fig.x-Joy_plots.svg")
 
 # VARIABLE IMPORTANCE PLOT ------------------------------------------------
 
 # extract varible importance 
 #   gbm model
-gbm_varImp <- h2o.varimp(gbm_results$fit.gbm.tuned.h2o) %>%
+gbm_varImp <- h2o.varimp(gbm_mod) %>%
   as.data.frame() %>%
   mutate(model = "gbm")
 #   rf model
-rf_varImp <- h2o.varimp(rf_results$fit.rf.tuned.h2o) %>%
+rf_varImp <- h2o.varimp(rf_mod) %>%
   as.data.frame() %>%
   mutate(model = "rf")
 
@@ -249,7 +253,7 @@ ggdotchart(
     ) +
   theme_cleveland() 
 
-ggsave("output/plots/fig.x-Variable_importance_plot.png", device = "png")
+ggsave("output/plots/fig.x-Variable_importance_plot.svg", device = "svg")
 
   
 
@@ -302,7 +306,7 @@ ggplot() +
   theme_minimal() +
   plotTheme()
 
-ggsave("output/plots/fig.x-ROC_curves.png")
+ggsave("output/plots/fig.x-ROC_curves.svg")
 
 
 # CONFUSION MATRIX MAPS ---------------------------------------------------
@@ -347,7 +351,7 @@ ggplot(grid_mat) +
        subtitle = "Spatial patterns in test-set prediction results") + 
   plotTheme(map = TRUE, title_color = 5)
 
-ggsave("output/plots/fig.x-Confusion_matrix_maps.png")
+ggsave("output/plots/fig.x-Confusion_matrix_maps.svg")
 
 
 # CONFUSION MATRIX --------------------------------------------------------
@@ -392,5 +396,5 @@ waffle(
     plot.margin = unit(c(0.5,0.5,0.5,0.5), "cm")
   )
 
-ggsave("output/plots/fig.x-Confusion_matrix_waffle.png")
+ggsave("output/plots/fig.x-Confusion_matrix_waffle.svg")
 

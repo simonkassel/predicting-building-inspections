@@ -13,15 +13,20 @@ purus. Aliquam non odio ut erat lacinia mollis. Ut scelerisque nisi mauris, a
 convallis ante elementum eget. Maecenas enim nulla, suscipit ac nisl et, varius
 varius neque.
 
-```{r eval=FALSE}
+```{r eval=TRUE, echo=FALSE}
+load("../data/full_dataset_for_modeling.Rdata")
+source("../R/helper-functions.R")
+```
+
+```{r eval=TRUE}
 
 # packages
 packages(c("tidyverse", "data.table", "sp", "caret", "plyr", "pROC", "statmod",
            "h2o", "Boruta"))
 
 # baseline accuracy
-print("Baseline Accuracy: ")
-round(max(table(ds$o.failed.n)) / nrow(ds), 2)
+baseline <- round(max(table(ds$o.failed.n)) / nrow(ds), 2)
+print(paste0("Baseline Accuracy: ", baseline))
 
 ```
 
@@ -81,15 +86,6 @@ search.criteria <- list(
   stopping_metric = "AUTO"
 )
 
-```
-
-Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla laoreet malesuada
-purus. Aliquam non odio ut erat lacinia mollis. Ut scelerisque nisi mauris, a
-convallis ante elementum eget. Maecenas enim nulla, suscipit ac nisl et, varius
-varius neque.
-
-```{r eval=FALSE}
-
 # subset variables into different categories
 fact_vars <- getVarNames(names(train.h2o), "f.")
 vi_vars <- getVarNames(names(train.h2o), "vi")
@@ -100,6 +96,15 @@ glm_pred_vars <- c(fact_vars, cont_vars, vi_vars, "e.avgDists.rep.n10")
 
 # specify alpha values
 alphas <- seq(0, 1, 0.1)
+
+```
+## Logistic Regression
+Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla laoreet malesuada
+purus. Aliquam non odio ut erat lacinia mollis. Ut scelerisque nisi mauris, a
+convallis ante elementum eget. Maecenas enim nulla, suscipit ac nisl et, varius
+varius neque.
+
+```{r eval=FALSE}
 
 # Parameter tuning:
 glm.tune.grid <- h2o.grid(
@@ -124,9 +129,16 @@ save(glm_mod, file = "output/glm_final_mod.Rdata")
 
 ```
 
-## Logistic Regression with interaction
+## Logistic Regression with Interaction Terms
 Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla laoreet malesuada
-purus. Aliquam non odio ut erat lacinia mollis. Ut scelerisque nisi mauris, a
+purus.
+
+<div class="embedded-tweet">
+  <blockquote class="twitter-tweet" data-partner="tweetdeck"><p lang="en" dir="ltr">Interaction Term <a href="https://twitter.com/hashtag/machinelearningflashcards?src=hash">#machinelearningflashcards</a> <a href="https://t.co/PsORsFXzQO">pic.twitter.com/PsORsFXzQO</a></p>&mdash; Chris Albon (@chrisalbon) <a href="https://twitter.com/chrisalbon/status/879756846361305089">June 27, 2017</a></blockquote>
+  <script async src="//platform.twitter.com/widgets.js" charset="utf-8"></script>
+</div>
+
+Aliquam non odio ut erat lacinia mollis. Ut scelerisque nisi mauris, a
 convallis ante elementum eget. Maecenas enim nulla, suscipit ac nisl et, varius
 varius neque.
 
@@ -263,7 +275,7 @@ purus. Aliquam non odio ut erat lacinia mollis. Ut scelerisque nisi mauris, a
 convallis ante elementum eget. Maecenas enim nulla, suscipit ac nisl et, varius
 varius neque.
 
-![](plots/fig.x-Variable_importance_plot.png)
+![](plots/fig.x-Variable_importance_plot.svg)
 
 ##Ensemble Multiple Models
 Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla laoreet malesuada

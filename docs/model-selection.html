@@ -214,8 +214,9 @@ packages(c(&quot;tidyverse&quot;, &quot;data.table&quot;, &quot;sp&quot;, &quot;
            &quot;h2o&quot;, &quot;Boruta&quot;))
 
 # baseline accuracy
-print(&quot;Baseline Accuracy: &quot;)
-round(max(table(ds$o.failed.n)) / nrow(ds), 2)</code></pre>
+baseline &lt;- round(max(table(ds$o.failed.n)) / nrow(ds), 2)
+print(paste0(&quot;Baseline Accuracy: &quot;, baseline))</code></pre>
+<pre><code>## [1] &quot;Baseline Accuracy: 0.57&quot;</code></pre>
 <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla laoreet malesuada purus. Aliquam non odio ut erat lacinia mollis. Ut scelerisque nisi mauris, a convallis ante elementum eget. Maecenas enim nulla, suscipit ac nisl et, varius varius neque.</p>
 </div>
 <div id="partition-dataset" class="section level2">
@@ -255,9 +256,9 @@ search.criteria &lt;- list(
   max_runtime_secs = 900,
   stopping_rounds = 5,
   stopping_metric = &quot;AUTO&quot;
-)</code></pre>
-<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla laoreet malesuada purus. Aliquam non odio ut erat lacinia mollis. Ut scelerisque nisi mauris, a convallis ante elementum eget. Maecenas enim nulla, suscipit ac nisl et, varius varius neque.</p>
-<pre class="r"><code># subset variables into different categories
+)
+
+# subset variables into different categories
 fact_vars &lt;- getVarNames(names(train.h2o), &quot;f.&quot;)
 vi_vars &lt;- getVarNames(names(train.h2o), &quot;vi&quot;)
 cont_vars &lt;- getVarNames(pred_vars, c(&quot;s.&quot;))
@@ -266,9 +267,12 @@ cont_vars &lt;- getVarNames(pred_vars, c(&quot;s.&quot;))
 glm_pred_vars &lt;- c(fact_vars, cont_vars, vi_vars, &quot;e.avgDists.rep.n10&quot;)
 
 # specify alpha values
-alphas &lt;- seq(0, 1, 0.1)
-
-# Parameter tuning:
+alphas &lt;- seq(0, 1, 0.1)</code></pre>
+</div>
+<div id="logistic-regression" class="section level2">
+<h2>Logistic Regression</h2>
+<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla laoreet malesuada purus. Aliquam non odio ut erat lacinia mollis. Ut scelerisque nisi mauris, a convallis ante elementum eget. Maecenas enim nulla, suscipit ac nisl et, varius varius neque.</p>
+<pre class="r"><code># Parameter tuning:
 glm.tune.grid &lt;- h2o.grid(
   algorithm = &quot;glm&quot;,
   hyper_params = list(alpha = alphas),
@@ -289,9 +293,19 @@ glm_results &lt;- get_from_grid(&quot;glm.tune.grid&quot;, valid.h2o)
 glm_mod &lt;- glm_results$fit.glm.tuned.h2o
 save(glm_mod, file = &quot;output/glm_final_mod.Rdata&quot;)</code></pre>
 </div>
-<div id="logistic-regression-with-interaction" class="section level2">
-<h2>Logistic Regression with interaction</h2>
-<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla laoreet malesuada purus. Aliquam non odio ut erat lacinia mollis. Ut scelerisque nisi mauris, a convallis ante elementum eget. Maecenas enim nulla, suscipit ac nisl et, varius varius neque.</p>
+<div id="logistic-regression-with-interaction-terms" class="section level2">
+<h2>Logistic Regression with Interaction Terms</h2>
+<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla laoreet malesuada purus.</p>
+<div class="embedded-tweet">
+<blockquote class="twitter-tweet" data-partner="tweetdeck">
+<p lang="en" dir="ltr">
+Interaction Term <a href="https://twitter.com/hashtag/machinelearningflashcards?src=hash">#machinelearningflashcards</a> <a href="https://t.co/PsORsFXzQO">pic.twitter.com/PsORsFXzQO</a>
+</p>
+— Chris Albon (<span class="citation">@chrisalbon</span>) <a href="https://twitter.com/chrisalbon/status/879756846361305089">June 27, 2017</a>
+</blockquote>
+<script async src="//platform.twitter.com/widgets.js" charset="utf-8"></script>
+</div>
+<p>Aliquam non odio ut erat lacinia mollis. Ut scelerisque nisi mauris, a convallis ante elementum eget. Maecenas enim nulla, suscipit ac nisl et, varius varius neque.</p>
 <pre class="r"><code># get interaction variables for train/test sets
 pairwise &lt;- getInteractionVars(train.h2o, realf, bind = FALSE)
 int_train &lt;- h2o.cbind(train.h2o, pairwise)
@@ -404,7 +418,7 @@ save(rf_mod, file = &quot;output/rf_final_mod.Rdata&quot;)</code></pre>
 <h2>Variable Importance</h2>
 <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla laoreet malesuada purus. Aliquam non odio ut erat lacinia mollis. Ut scelerisque nisi mauris, a convallis ante elementum eget. Maecenas enim nulla, suscipit ac nisl et, varius varius neque.</p>
 <div class="figure">
-<img src="plots/fig.x-Variable_importance_plot.png" />
+<img src="plots/fig.x-Variable_importance_plot.svg" />
 
 </div>
 </div>

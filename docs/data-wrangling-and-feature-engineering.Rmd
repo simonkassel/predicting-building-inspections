@@ -56,8 +56,6 @@ purus. Aliquam non odio ut erat lacinia mollis. Ut scelerisque nisi mauris, a
 convallis ante elementum eget. Maecenas enim nulla, suscipit ac nisl et, varius
 varius neque.
 
-![](images/placeholder.jpg)
-
 Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla laoreet malesuada
 purus. Aliquam non odio ut erat lacinia mollis. Ut scelerisque nisi mauris, a
 convallis ante elementum eget. Maecenas enim nulla, suscipit ac nisl et, varius
@@ -86,7 +84,7 @@ purus. Aliquam non odio ut erat lacinia mollis. Ut scelerisque nisi mauris, a
 convallis ante elementum eget. Maecenas enim nulla, suscipit ac nisl et, varius
 varius neque.
 
-![](plots/fig.x-Joy_plots.png)
+![](plots/fig.x-Joy_plots.svg)
 
 ```{r eval=FALSE}
 # extract 'violation type' variable and remove levels occurring < 0.02%
@@ -106,7 +104,7 @@ df_violTpe <- castAndSumm(df_violTpe, "id.apinspkey", "violTpe", binary = FALSE)
 
 ```
 
-![](plots/fig.x-Levels-of-data-bar-charts.png)
+![](plots/fig.x-Levels-of-data-bar-charts.svg)
 
 ```{r eval=FALSE}
 
@@ -120,7 +118,7 @@ purus. Aliquam non odio ut erat lacinia mollis. Ut scelerisque nisi mauris, a
 convallis ante elementum eget. Maecenas enim nulla, suscipit ac nisl et, varius
 varius neque.
 
-![](plots/fig.x-Map_of_fails_and_passes.png)
+![](plots/fig.x-Map_of_fails_and_passes.svg)
 
 ```{r eval=FALSE}
 
@@ -201,7 +199,15 @@ purus. Aliquam non odio ut erat lacinia mollis. Ut scelerisque nisi mauris, a
 convallis ante elementum eget. Maecenas enim nulla, suscipit ac nisl et, varius
 varius neque.
 
-![](images/placeholder.jpg)
+<div class="embedded-tweet">
+  <blockquote class="twitter-tweet" data-partner="tweetdeck"><p lang="en" dir="ltr">One-Hot Encoding <a href="https://twitter.com/hashtag/machinelearningflashcards?src=hash">#machinelearningflashcards</a> <a href="https://t.co/n3gUivTxLc">pic.twitter.com/n3gUivTxLc</a></p>&mdash; Chris Albon (@chrisalbon) <a href="https://twitter.com/chrisalbon/status/895737233986142208">August 10, 2017</a></blockquote>
+  <script async src="//platform.twitter.com/widgets.js" charset="utf-8"></script>
+</div>
+
+Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla laoreet malesuada
+purus. Aliquam non odio ut erat lacinia mollis. Ut scelerisque nisi mauris, a
+convallis ante elementum eget. Maecenas enim nulla, suscipit ac nisl et, varius
+varius neque.
 
 ```{r eval=FALSE}
 
