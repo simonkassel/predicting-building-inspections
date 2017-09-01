@@ -180,19 +180,16 @@ $(document).ready(function () {
       </ul>
       <ul class="nav navbar-nav navbar-right">
         <li>
-  <a href="data-wrangling-and-feature-engineering.html">data wrangling + feature engineering</a>
+  <a href="data-wrangling-and-feature-engineering.html">data preprocessing</a>
 </li>
 <li>
   <a href="feature-selection.html">feature selection</a>
 </li>
 <li>
-  <a href="model-selection.html">model selection</a>
+  <a href="model-selection.html">model building</a>
 </li>
 <li>
   <a href="results.html">results</a>
-</li>
-<li>
-  <a href="helper-functions.html">helper functions</a>
 </li>
       </ul>
     </div><!--/.nav-collapse -->
@@ -208,13 +205,10 @@ $(document).ready(function () {
 </div>
 
 
-<p> </p>
-<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla laoreet malesuada purus. Aliquam non odio ut erat lacinia mollis. Ut scelerisque nisi mauris, a convallis ante elementum eget. Maecenas enim nulla, suscipit ac nisl et, varius varius neque. Phasellus non posuere erat, a faucibus tellus. Morbi id consequat lorem. Praesent nec tincidunt lorem. Duis maximus venenatis ipsum, eu pulvinar mi semper et. Curabitur vel dolor nunc. Nunc ornare justo tellus, ut cursus sapien ultricies vitae. Phasellus sapien dolor, ultrices id tortor vitae, blandit ultrices mi. Etiam at magna vitae ipsum consectetur iaculis. Etiam quis felis tortor. Nam tempus convallis pulvinar.</p>
-<p> </p>
+<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla laoreet malesuada purus. Aliquam non odio ut erat lacinia mollis. Ut scelerisque nisi mauris, a convallis ante elementum eget. Maecenas enim nulla, suscipit ac nisl et, varius varius neque.</p>
 <div id="load-and-wrangle-data" class="section level2">
 <h2>Load and wrangle data</h2>
-<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla laoreet malesuada purus. Aliquam non odio ut erat lacinia mollis. Ut scelerisque nisi mauris, a convallis ante elementum eget. Maecenas enim nulla, suscipit ac nisl et, varius varius neque. Phasellus non posuere erat, a faucibus tellus. Morbi id consequat lorem. Praesent nec tincidunt lorem. Duis maximus venenatis ipsum, eu pulvinar mi semper et. Curabitur vel dolor nunc. Nunc ornare justo tellus, ut cursus sapien ultricies vitae. Phasellus sapien dolor, ultrices id tortor vitae, blandit ultrices mi. Etiam at magna vitae ipsum consectetur iaculis. Etiam quis felis tortor. Nam tempus convallis pulvinar.</p>
-<p> </p>
+<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla laoreet malesuada purus. Aliquam non odio ut erat lacinia mollis. Ut scelerisque nisi mauris, a convallis ante elementum eget. Maecenas enim nulla, suscipit ac nisl et, varius varius neque.</p>
 <pre class="r"><code># packages
 packages(c(&quot;tidyverse&quot;, &quot;data.table&quot;, &quot;sp&quot;, &quot;caret&quot;, &quot;plyr&quot;, &quot;pROC&quot;, &quot;statmod&quot;,
            &quot;h2o&quot;, &quot;Boruta&quot;))
@@ -222,12 +216,11 @@ packages(c(&quot;tidyverse&quot;, &quot;data.table&quot;, &quot;sp&quot;, &quot;
 # baseline accuracy
 print(&quot;Baseline Accuracy: &quot;)
 round(max(table(ds$o.failed.n)) / nrow(ds), 2)</code></pre>
-<p> </p>
-<p>vel dolor nunc. Nunc ornare justo tellus, ut cursus sapien ultricies vitae.</p>
-<p> </p>
+<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla laoreet malesuada purus. Aliquam non odio ut erat lacinia mollis. Ut scelerisque nisi mauris, a convallis ante elementum eget. Maecenas enim nulla, suscipit ac nisl et, varius varius neque.</p>
 </div>
 <div id="partition-dataset" class="section level2">
 <h2>Partition Dataset</h2>
+<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla laoreet malesuada purus. Aliquam non odio ut erat lacinia mollis. Ut scelerisque nisi mauris, a convallis ante elementum eget. Maecenas enim nulla, suscipit ac nisl et, varius varius neque.</p>
 <pre class="r"><code># remove rejected vars
 d &lt;- ds %&gt;%
   select(-one_of(rejected_vars))
@@ -243,8 +236,7 @@ pred_vars &lt;- setdiff(names(d), c(non_mod_vars, &quot;o.failed.n&quot;, &quot;
 </div>
 <div id="h2o" class="section level2">
 <h2>H2O</h2>
-<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla laoreet malesuada purus. Aliquam non odio ut erat lacinia mollis. Ut scelerisque nisi mauris, a convallis ante elementum eget. Maecenas enim nulla, suscipit ac nisl et, varius varius neque. Phasellus non posuere erat, a faucibus tellus. Morbi id consequat lorem. Praesent nec tincidunt lorem. Duis maximus venenatis ipsum, eu pulvinar mi semper et. Curabitur vel dolor nunc. Nunc ornare justo tellus, ut cursus sapien ultricies vitae. Phasellus sapien dolor, ultrices id tortor vitae, blandit ultrices mi. Etiam at magna vitae ipsum consectetur iaculis. Etiam quis felis tortor. Nam tempus convallis pulvinar.</p>
-<p> </p>
+<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla laoreet malesuada purus. Aliquam non odio ut erat lacinia mollis. Ut scelerisque nisi mauris, a convallis ante elementum eget. Maecenas enim nulla, suscipit ac nisl et, varius varius neque.</p>
 <pre class="r"><code># initialize h2o cluster
 localhost &lt;- h2o.init(nthreads = -1, max_mem_size = &quot;8G&quot;)
 
@@ -264,12 +256,7 @@ search.criteria &lt;- list(
   stopping_rounds = 5,
   stopping_metric = &quot;AUTO&quot;
 )</code></pre>
-<p> </p>
-</div>
-<div id="logistic-regression" class="section level2">
-<h2>Logistic Regression</h2>
-<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla laoreet malesuada purus. Aliquam non odio ut erat lacinia mollis. Ut scelerisque nisi mauris, a convallis ante elementum eget. Maecenas enim nulla, suscipit ac nisl et, varius varius neque. Phasellus non posuere erat, a faucibus tellus. Morbi id consequat lorem. Praesent nec tincidunt lorem. Duis maximus venenatis ipsum, eu pulvinar mi semper et. Curabitur vel dolor nunc. Nunc ornare justo tellus, ut cursus sapien ultricies vitae. Phasellus sapien dolor, ultrices id tortor vitae, blandit ultrices mi. Etiam at magna vitae ipsum consectetur iaculis. Etiam quis felis tortor. Nam tempus convallis pulvinar.</p>
-<p> </p>
+<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla laoreet malesuada purus. Aliquam non odio ut erat lacinia mollis. Ut scelerisque nisi mauris, a convallis ante elementum eget. Maecenas enim nulla, suscipit ac nisl et, varius varius neque.</p>
 <pre class="r"><code># subset variables into different categories
 fact_vars &lt;- getVarNames(names(train.h2o), &quot;f.&quot;)
 vi_vars &lt;- getVarNames(names(train.h2o), &quot;vi&quot;)
@@ -301,12 +288,10 @@ glm_results &lt;- get_from_grid(&quot;glm.tune.grid&quot;, valid.h2o)
 # save results
 glm_mod &lt;- glm_results$fit.glm.tuned.h2o
 save(glm_mod, file = &quot;output/glm_final_mod.Rdata&quot;)</code></pre>
-<p> </p>
 </div>
 <div id="logistic-regression-with-interaction" class="section level2">
 <h2>Logistic Regression with interaction</h2>
-<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla laoreet malesuada purus. Aliquam non odio ut erat lacinia mollis. Ut scelerisque nisi mauris, a convallis ante elementum eget. Maecenas enim nulla, suscipit ac nisl et, varius varius neque. Phasellus non posuere erat, a faucibus tellus. Morbi id consequat lorem. Praesent nec tincidunt lorem. Duis maximus venenatis ipsum, eu pulvinar mi semper et. Curabitur vel dolor nunc. Nunc ornare justo tellus, ut cursus sapien ultricies vitae. Phasellus sapien dolor, ultrices id tortor vitae, blandit ultrices mi. Etiam at magna vitae ipsum consectetur iaculis. Etiam quis felis tortor. Nam tempus convallis pulvinar.</p>
-<p> </p>
+<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla laoreet malesuada purus. Aliquam non odio ut erat lacinia mollis. Ut scelerisque nisi mauris, a convallis ante elementum eget. Maecenas enim nulla, suscipit ac nisl et, varius varius neque.</p>
 <pre class="r"><code># get interaction variables for train/test sets
 pairwise &lt;- getInteractionVars(train.h2o, realf, bind = FALSE)
 int_train &lt;- h2o.cbind(train.h2o, pairwise)
@@ -339,13 +324,12 @@ all_glm_results &lt;- llply(all_glm_mods, getPredictions, validation_frame = int
          vote = glm.predict + glm_cont.predict + glm_factor.predict + glm_interaction.predict,
          vote_pred = ifelse(vote &gt; 2, 1, 0),
          correct = ifelse(vote_pred == result, 1, 0),
-         mean_vote = (glm.p1 + glm_cont.p1 + glm_factor.p1 + glm_interaction.p1) / 4)
-
-
-
-# GBM ---------------------------------------------------------------------
-
-# Tuned parameters:
+         mean_vote = (glm.p1 + glm_cont.p1 + glm_factor.p1 + glm_interaction.p1) / 4)</code></pre>
+</div>
+<div id="gradient-boosting-machine" class="section level2">
+<h2>Gradient Boosting Machine</h2>
+<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla laoreet malesuada purus. Aliquam non odio ut erat lacinia mollis. Ut scelerisque nisi mauris, a convallis ante elementum eget. Maecenas enim nulla, suscipit ac nisl et, varius varius neque.</p>
+<pre class="r"><code># Tuned parameters:
 # define hyperparameter grid
 gbm.grid &lt;- list(
   learn_rate = seq(.03,.05,.01),
@@ -376,12 +360,11 @@ gbm_results &lt;- get_from_grid(&quot;gbm.tune.grid&quot;, valid.h2o)
 # save results
 gbm_mod &lt;- gbm_results$fit.gbm.tuned.h2o
 save(gbm_mod, file = &quot;output/gbm_final_mod.Rdata&quot;)</code></pre>
-<p> </p>
 </div>
 <div id="random-forest" class="section level2">
 <h2>Random Forest</h2>
-<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla laoreet malesuada purus. Aliquam non odio ut erat lacinia mollis. Ut scelerisque nisi mauris, a convallis ante elementum eget. Maecenas enim nulla, suscipit ac nisl et, varius varius neque. Phasellus non posuere erat, a faucibus tellus. Morbi id consequat lorem. Praesent nec tincidunt lorem. Duis maximus venenatis ipsum, eu pulvinar mi semper et. Curabitur vel dolor nunc. Nunc ornare justo tellus, ut cursus sapien ultricies vitae. Phasellus sapien dolor, ultrices id tortor vitae, blandit ultrices mi. Etiam at magna vitae ipsum consectetur iaculis. Etiam quis felis tortor. Nam tempus convallis pulvinar.</p>
-<p> </p>
+<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla laoreet malesuada purus. Aliquam non odio ut erat lacinia mollis. Ut scelerisque nisi mauris, a convallis ante elementum eget. Maecenas enim nulla, suscipit ac nisl et, varius varius neque.</p>
+<div class="embedded-tweet">
 <blockquote class="twitter-tweet" data-lang="en">
 <p lang="en" dir="ltr">
 Random Forest Classification <a href="https://twitter.com/hashtag/machinelearningflashcards?src=hash">#machinelearningflashcards</a> <a href="https://t.co/aLzGWvyAAH">pic.twitter.com/aLzGWvyAAH</a>
@@ -390,10 +373,11 @@ Random Forest Classification <a href="https://twitter.com/hashtag/machinelearnin
 </blockquote>
 <script async src="//platform.twitter.com/widgets.js" charset="utf-8"></script>
 <div class="figure">
-<img src="C:/Users/skassel/Desktop/predicting-building-inspections/output/plots/machinelearningflashcards_randomForrest.jpg" />
+<img src="images/machinelearningflashcards_randomForrest.jpg" />
 
 </div>
-<p> </p>
+</div>
+<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla laoreet malesuada purus. Aliquam non odio ut erat lacinia mollis. Ut scelerisque nisi mauris, a convallis ante elementum eget. Maecenas enim nulla, suscipit ac nisl et, varius varius neque.</p>
 <pre class="r"><code>rf.grid &lt;- list(
   max_depth = seq(15, 30, 45),
   ntrees = c(10, 25, 50)
@@ -419,22 +403,18 @@ rf_results &lt;- get_from_grid(&quot;rf.tune.grid&quot;, valid.h2o)
 # save results
 rf_mod &lt;- rf_results$fit.rf.tuned.h2o
 save(rf_mod, file = &quot;output/rf_final_mod.Rdata&quot;)</code></pre>
-<p> </p>
 </div>
 <div id="variable-importance" class="section level2">
 <h2>Variable Importance</h2>
-<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla laoreet malesuada purus. Aliquam non odio ut erat lacinia mollis. Ut scelerisque nisi mauris, a convallis ante elementum eget. Maecenas enim nulla, suscipit ac nisl et, varius varius neque. Phasellus non posuere erat, a faucibus tellus. Morbi id consequat lorem. Praesent nec tincidunt lorem. Duis maximus venenatis ipsum, eu pulvinar mi semper et. Curabitur vel dolor nunc. Nunc ornare justo tellus, ut cursus sapien ultricies vitae. Phasellus sapien dolor, ultrices id tortor vitae, blandit ultrices mi. Etiam at magna vitae ipsum consectetur iaculis. Etiam quis felis tortor. Nam tempus convallis pulvinar.</p>
-<p> </p>
+<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla laoreet malesuada purus. Aliquam non odio ut erat lacinia mollis. Ut scelerisque nisi mauris, a convallis ante elementum eget. Maecenas enim nulla, suscipit ac nisl et, varius varius neque.</p>
 <div class="figure">
-<img src="C:/Users/skassel/Desktop/predicting-building-inspections/output/plots/fig.x-Variable_importance_plot.png" alt="Fig. 1 - Plotting variable Importance" />
-<p class="caption"><em>Fig. 1 - Plotting variable Importance</em></p>
+<img src="plots/fig.x-Variable_importance_plot.png" />
+
 </div>
-<p> </p>
 </div>
 <div id="ensemble-multiple-models" class="section level2">
 <h2>Ensemble Multiple Models</h2>
-<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla laoreet malesuada purus. Aliquam non odio ut erat lacinia mollis. Ut scelerisque nisi mauris, a convallis ante elementum eget. Maecenas enim nulla, suscipit ac nisl et, varius varius neque. Phasellus non posuere erat, a faucibus tellus. Morbi id consequat lorem. Praesent nec tincidunt lorem. Duis maximus venenatis ipsum, eu pulvinar mi semper et. Curabitur vel dolor nunc. Nunc ornare justo tellus, ut cursus sapien ultricies vitae. Phasellus sapien dolor, ultrices id tortor vitae, blandit ultrices mi. Etiam at magna vitae ipsum consectetur iaculis. Etiam quis felis tortor. Nam tempus convallis pulvinar.</p>
-<p> </p>
+<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla laoreet malesuada purus. Aliquam non odio ut erat lacinia mollis. Ut scelerisque nisi mauris, a convallis ante elementum eget. Maecenas enim nulla, suscipit ac nisl et, varius varius neque.</p>
 <pre class="r"><code># Combine prediction results from each algorithm with original dataset
 results &lt;- valid %&gt;%
   cbind(all_glm_results, rf_results$pred.rf, gbm_results$pred.gbm)
@@ -445,7 +425,7 @@ results &lt;- results %&gt;%
     rf.predict + gbm.predict + glm_interaction.p1 &gt; 1, 1, 0)) %&gt;%
   mutate(ensemble.p1 = (glm_interaction.p1 + rf.p1 + gbm.p1) / 3) %&gt;%
   mutate(ensemble.correct = ifelse(ensemble.predict == o.failed.n, 1, 0))</code></pre>
-<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla laoreet malesuada purus. Aliquam non odio ut erat lacinia mollis. Ut scelerisque nisi mauris, a convallis ante elementum eget. Maecenas enim nulla, suscipit ac nisl et, varius varius neque. Phasellus non posuere erat, a faucibus tellus. Morbi id consequat lorem. Praesent nec tincidunt lorem. Duis maximus venenatis ipsum, eu pulvinar mi semper et. Curabitur vel dolor nunc. Nunc ornare justo tellus, ut cursus sapien ultricies vitae. Phasellus sapien dolor, ultrices id tortor vitae, blandit ultrices mi. Etiam at magna vitae ipsum consectetur iaculis. Etiam quis felis tortor. Nam tempus convallis pulvinar.</p>
+<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla laoreet malesuada purus. Aliquam non odio ut erat lacinia mollis. Ut scelerisque nisi mauris, a convallis ante elementum eget. Maecenas enim nulla, suscipit ac nisl et, varius varius neque.</p>
 </div>
 
 

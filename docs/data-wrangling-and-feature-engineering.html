@@ -11,7 +11,7 @@
 
 
 
-<title>Data Wrangling and Feature Engineering</title>
+<title>Data Preprocessing</title>
 
 <script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -180,19 +180,16 @@ $(document).ready(function () {
       </ul>
       <ul class="nav navbar-nav navbar-right">
         <li>
-  <a href="data-wrangling-and-feature-engineering.html">data wrangling + feature engineering</a>
+  <a href="data-wrangling-and-feature-engineering.html">data preprocessing</a>
 </li>
 <li>
   <a href="feature-selection.html">feature selection</a>
 </li>
 <li>
-  <a href="model-selection.html">model selection</a>
+  <a href="model-selection.html">model building</a>
 </li>
 <li>
   <a href="results.html">results</a>
-</li>
-<li>
-  <a href="helper-functions.html">helper functions</a>
 </li>
       </ul>
     </div><!--/.nav-collapse -->
@@ -203,17 +200,15 @@ $(document).ready(function () {
 
 
 
-<h1 class="title toc-ignore">Data Wrangling and Feature Engineering</h1>
+<h1 class="title toc-ignore">Data Preprocessing</h1>
 
 </div>
 
 
-<p> </p>
-<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla laoreet malesuada purus. Aliquam non odio ut erat lacinia mollis. Ut scelerisque nisi mauris, a convallis ante elementum eget. Maecenas enim nulla, suscipit ac nisl et, varius varius neque. Phasellus non posuere erat, a faucibus tellus. Morbi id consequat lorem. Praesent nec tincidunt lorem. Duis maximus venenatis ipsum, eu pulvinar mi semper et. Curabitur vel dolor nunc. Nunc ornare justo tellus, ut cursus sapien ultricies vitae. Phasellus sapien dolor, ultrices id tortor vitae, blandit ultrices mi. Etiam at magna vitae ipsum consectetur iaculis. Etiam quis felis tortor. Nam tempus convallis pulvinar.</p>
-<p> </p>
+<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla laoreet malesuada purus. Aliquam non odio ut erat lacinia mollis. Ut scelerisque nisi mauris, a convallis ante elementum eget. Maecenas enim nulla, suscipit ac nisl et, varius varius neque.</p>
 <div id="load-and-wrangle-data" class="section level2">
 <h2>Load and wrangle data</h2>
-<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla laoreet malesuada purus. Aliquam non odio ut erat lacinia mollis. Ut scelerisque nisi mauris, a convallis ante elementum eget. Maecenas enim nulla, suscipit ac nisl et, varius varius neque. Phasellus non posuere erat, a faucibus tellus. Morbi id consequat lorem. Praesent nec tincidunt lorem. Duis maximus venenatis ipsum, eu pulvinar mi semper et. Curabitur vel dolor nunc. Nunc ornare justo tellus, ut cursus sapien ultricies vitae. Phasellus sapien dolor, ultrices id tortor vitae, blandit ultrices mi. Etiam at magna vitae ipsum consectetur iaculis. Etiam quis felis tortor. Nam tempus convallis pulvinar.  </p>
+<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla laoreet malesuada purus. Aliquam non odio ut erat lacinia mollis. Ut scelerisque nisi mauris, a convallis ante elementum eget. Maecenas enim nulla, suscipit ac nisl et, varius varius neque.</p>
 <pre class="r"><code># packages
 packages(c(&quot;tidyverse&quot;, &quot;data.table&quot;, &quot;sp&quot;, &quot;rgdal&quot;, &quot;lubridate&quot;, &quot;plyr&quot;,
   &quot;forcats&quot;, &quot;caret&quot;, &quot;spatstat&quot;, &quot;RCurl&quot;, &quot;jsonlite&quot;))
@@ -248,19 +243,16 @@ df &lt;- filtered_dat %&gt;%
   data.table() %&gt;%
   .[, c(&quot;organizati&quot;, &quot;unit&quot;, &quot;apdesc&quot;, &quot;aptype&quot;) := NULL] %&gt;%
   na.omit()</code></pre>
-<p> </p>
-<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla laoreet malesuada purus. Aliquam non odio ut erat lacinia mollis. Ut scelerisque nisi mauris, a convallis ante elementum eget. Maecenas enim nulla, suscipit ac nisl et, varius varius neque. Phasellus non posuere erat, a faucibus tellus. Morbi id consequat lorem. Praesent nec tincidunt lorem.</p>
-<p> </p>
+<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla laoreet malesuada purus. Aliquam non odio ut erat lacinia mollis. Ut scelerisque nisi mauris, a convallis ante elementum eget. Maecenas enim nulla, suscipit ac nisl et, varius varius neque.</p>
 <div class="figure">
-<img src="./output/plots/placeholder.jpg" alt="Fig. 1 - Measuring inspection outcomes over the lifetime of a case" />
-<p class="caption"><em>Fig. 1 - Measuring inspection outcomes over the lifetime of a case</em></p>
+<img src="images/placeholder.jpg" />
+
 </div>
-<p> </p>
-<p>Duis maximus venenatis ipsum, eu pulvinar mi semper et. Curabitur vel dolor nunc. Nunc ornare justo tellus, ut cursus sapien ultricies vitae. Phasellus sapien dolor, ultrices id tortor vitae, blandit ultrices mi. Etiam at magna vitae ipsum consectetur iaculis. Etiam quis felis tortor. Nam tempus convallis pulvinar.</p>
-<p> </p>
+<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla laoreet malesuada purus. Aliquam non odio ut erat lacinia mollis. Ut scelerisque nisi mauris, a convallis ante elementum eget. Maecenas enim nulla, suscipit ac nisl et, varius varius neque.</p>
 </div>
 <div id="feature-engineering" class="section level2">
 <h2>Feature Engineering</h2>
+<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla laoreet malesuada purus. Aliquam non odio ut erat lacinia mollis. Ut scelerisque nisi mauris, a convallis ante elementum eget. Maecenas enim nulla, suscipit ac nisl et, varius varius neque.</p>
 <pre class="r"><code># create additional variables
 df$zipShort &lt;- substr(df$zip, 1, 5) %&gt;% as.factor()
 df$failed &lt;- ifelse(df$inspStatus == &quot;Failed&quot;, 1, 0)
@@ -269,14 +261,11 @@ df$before &lt;- as.factor(df$before)
 # add 3 variables indicating durations from previous events in lifecycle of
 #   building case
 df &lt;- durationVars(df)</code></pre>
-<p> </p>
-<p>Duis maximus venenatis ipsum, eu pulvinar mi semper et. Curabitur vel dolor nunc. Nunc ornare justo tellus, ut cursus sapien ultricies vitae. Phasellus sapien dolor, ultrices id tortor vitae, blandit ultrices mi. Etiam at magna vitae ipsum consectetur iaculis. Etiam quis felis tortor. Nam tempus convallis pulvinar.</p>
-<p> </p>
+<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla laoreet malesuada purus. Aliquam non odio ut erat lacinia mollis. Ut scelerisque nisi mauris, a convallis ante elementum eget. Maecenas enim nulla, suscipit ac nisl et, varius varius neque.</p>
 <div class="figure">
-<img src="C:/Users/skassel/Desktop/predicting-building-inspections/output/plots/fig.x-Joy_plots.png" alt="Fig. 2 - Time variables" />
-<p class="caption"><em>Fig. 2 - Time variables</em></p>
+<img src="plots/fig.x-Joy_plots.png" />
+
 </div>
-<p> </p>
 <pre class="r"><code># extract &#39;violation type&#39; variable and remove levels occurring &lt; 0.02%
 #   of the time
 df_violTpe  &lt;- df %&gt;%
@@ -291,22 +280,17 @@ violType_lookup &lt;- getFactorLevelLookup(df_violTpe$violTpe, &quot;violTpe&quo
 # encode violation-type categorical feature as a series of binary
 #   numeric dummy variables
 df_violTpe &lt;- castAndSumm(df_violTpe, &quot;id.apinspkey&quot;, &quot;violTpe&quot;, binary = FALSE)</code></pre>
-<p> </p>
 <div class="figure">
-<img src="C:/Users/skassel/Desktop/predicting-building-inspections/output/plots/fig.x-Levels-of-data-bar-charts.png" alt="Fig. 3 - Levels of L&amp;I data" />
-<p class="caption"><em>Fig. 3 - Levels of L&amp;I data</em></p>
+<img src="plots/fig.x-Levels-of-data-bar-charts.png" />
+
 </div>
-<p> </p>
 <pre class="r"><code># collapse dataset to the inspection level, summarizing
 ds &lt;- summariseInspections(df)</code></pre>
-<p> </p>
-<p>Duis maximus venenatis ipsum, eu pulvinar mi semper et. Curabitur vel dolor nunc. Nunc ornare justo tellus, ut cursus sapien ultricies vitae. Phasellus sapien dolor, ultrices id tortor vitae, blandit ultrices mi. Etiam at magna vitae ipsum consectetur iaculis. Etiam quis felis tortor. Nam tempus convallis pulvinar.</p>
-<p> </p>
+<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla laoreet malesuada purus. Aliquam non odio ut erat lacinia mollis. Ut scelerisque nisi mauris, a convallis ante elementum eget. Maecenas enim nulla, suscipit ac nisl et, varius varius neque.</p>
 <div class="figure">
-<img src="C:/Users/skassel/Desktop/predicting-building-inspections/output/plots/fig.x-Map_of_fails_and_passes.png" alt="Fig. 4 - Mapping the response variable" />
-<p class="caption"><em>Fig. 4 - Mapping the response variable</em></p>
+<img src="plots/fig.x-Map_of_fails_and_passes.png" />
+
 </div>
-<p> </p>
 <pre class="r"><code># measure for spatial autocorrelation among repeat violators
 ds &lt;- endogMain(ds, nlist = c(5, 10))
 
@@ -321,12 +305,10 @@ ds &lt;- ds %&gt;%
   mutate(f.prevFail = as.factor(squishToRange(e.prevFail))) %&gt;%
   select(-e.numFailTypes, -e.numViol, -e.prevFail) %&gt;%
   filter(is.finite(e.avgDists.repOfAll.n5))</code></pre>
-<p> </p>
 </div>
 <div id="external-data-sources" class="section level2">
 <h2>External Data Sources</h2>
-<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla laoreet malesuada purus. Aliquam non odio ut erat lacinia mollis. Ut scelerisque nisi mauris, a convallis ante elementum eget. Maecenas enim nulla, suscipit ac nisl et, varius varius neque. Phasellus non posuere erat, a faucibus tellus. Morbi id consequat lorem. Praesent nec tincidunt lorem. Duis maximus venenatis ipsum, eu pulvinar mi semper et. Curabitur vel dolor nunc. Nunc ornare justo tellus, ut cursus sapien ultricies vitae. Phasellus sapien dolor, ultrices id tortor vitae, blandit ultrices mi. Etiam at magna vitae ipsum consectetur iaculis. Etiam quis felis tortor. Nam tempus convallis pulvinar.</p>
-<p> </p>
+<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla laoreet malesuada purus. Aliquam non odio ut erat lacinia mollis. Ut scelerisque nisi mauris, a convallis ante elementum eget. Maecenas enim nulla, suscipit ac nisl et, varius varius neque.</p>
 <pre class="r"><code># vacant property indicators
 # read dataset
 vpi &lt;- read.csv(&quot;http://data.phl.opendata.arcgis.com/datasets/f7ed68293c5\
@@ -372,17 +354,14 @@ ds.temp &lt;- ds %&gt;%
 
 # and bind it to the master dataset
 ds &lt;- cbind(ds, ds.temp)</code></pre>
-<p> </p>
 </div>
 <div id="dealing-with-categorical-variables" class="section level2">
 <h2>Dealing with categorical variables</h2>
-<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla laoreet malesuada purus. Aliquam non odio ut erat lacinia mollis. Ut scelerisque nisi mauris, a convallis ante elementum eget. Maecenas enim nulla, suscipit ac nisl et, varius varius neque. Phasellus non posuere erat, a faucibus tellus. Morbi id consequat lorem. Praesent nec tincidunt lorem. Duis maximus venenatis ipsum, eu pulvinar mi semper et. Curabitur vel dolor nunc. Nunc ornare justo tellus, ut cursus sapien ultricies vitae. Phasellus sapien dolor, ultrices id tortor vitae, blandit ultrices mi. Etiam at magna vitae ipsum consectetur iaculis. Etiam quis felis tortor. Nam tempus convallis pulvinar.</p>
-<p> </p>
+<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla laoreet malesuada purus. Aliquam non odio ut erat lacinia mollis. Ut scelerisque nisi mauris, a convallis ante elementum eget. Maecenas enim nulla, suscipit ac nisl et, varius varius neque.</p>
 <div class="figure">
-<img src="C:/Users/skassel/Desktop/predicting-building-inspections/output/plots/placeholder.jpg" alt="Fig. 4 - One hot encoding (Source: source)" />
-<p class="caption"><em>Fig. 4 - One hot encoding (Source: source)</em></p>
+<img src="images/placeholder.jpg" />
+
 </div>
-<p> </p>
 <pre class="r"><code># get list of factor variable names
 names &lt;- ds %&gt;%
   select(starts_with(&quot;f.&quot;)) %&gt;%
@@ -394,7 +373,8 @@ factor_variable_list &lt;- llply(names, castFactorVars, dat = ds,
                               .progress = &quot;text&quot;)
 
 # join all categorical data variable dfs together
-ds &lt;- plyr::join_all(factor_variable_list, by = &quot;id.apinspkey&quot;, type = &quot;left&quot;, match = &quot;all&quot;) %&gt;%
+ds &lt;- plyr::join_all(factor_variable_list, by = &quot;id.apinspkey&quot;,
+                     type = &quot;left&quot;, match = &quot;all&quot;) %&gt;%
   left_join(df_violTpe, &quot;id.apinspkey&quot;) %&gt;%
   select(-id.apinspkey) %&gt;%
   cbind(ds,. )
@@ -413,8 +393,7 @@ mod_vars &lt;- ds %&gt;% select(
   -starts_with(&quot;l.&quot;), -starts_with(&quot;f.&quot;)) %&gt;%
   names
 non_mod_vars &lt;- setdiff(names(ds), mod_vars)</code></pre>
-<p> </p>
-<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla laoreet malesuada purus. Aliquam non odio ut erat lacinia mollis. Ut scelerisque nisi mauris, a convallis ante elementum eget. Maecenas enim nulla, suscipit ac nisl et, varius varius neque. Phasellus non posuere erat, a faucibus tellus. Morbi id consequat lorem. Praesent nec tincidunt lorem. Duis maximus venenatis ipsum, eu pulvinar mi semper et. Curabitur vel dolor nunc. Nunc ornare justo tellus, ut cursus sapien ultricies vitae. Phasellus sapien dolor, ultrices id tortor vitae, blandit ultrices mi. Etiam at magna vitae ipsum consectetur iaculis. Etiam quis felis tortor. Nam tempus convallis pulvinar.</p>
+<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla laoreet malesuada purus. Aliquam non odio ut erat lacinia mollis. Ut scelerisque nisi mauris, a convallis ante elementum eget. Maecenas enim nulla, suscipit ac nisl et, varius varius neque.</p>
 </div>
 
 
