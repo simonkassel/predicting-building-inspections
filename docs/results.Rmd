@@ -1,5 +1,6 @@
 ---
 title: "Results"
+output: "html_document"
 ---
 
 Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla laoreet malesuada
